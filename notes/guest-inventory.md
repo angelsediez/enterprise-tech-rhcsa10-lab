@@ -26,7 +26,7 @@ The following environment settings apply to the virtualization host where these 
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- | :--- |
 | `srv-admin` | Administration and management node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ✅ Installed | ✅ Validated | ✅ Complete |
 | `srv-web` | Web service node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ✅ Installed | ✅ Validated | ✅ Complete |
-| `srv-db` | Database service node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ⚪ Pending | ⚪ Pending | ⚪ Pending |
+| `srv-db` | Database service node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ✅ Installed | ✅ Validated | ✅ Complete |
 | `srv-storage` | Shared storage and NFS/autofs support node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ⚪ Pending | ⚪ Pending | ⚪ Pending |
 
 > [!NOTE]
@@ -76,8 +76,12 @@ The following environment settings apply to the virtualization host where these 
 - Screenshot set completed for the Phase 02 deployment workflow.
 
 ### 🗄️ `srv-db`
-- Intended for database-related service work in later phases.
-- Should begin with the same clean guest model used for `srv-admin`.
+- Successfully deployed using the validated `srv-admin` and `srv-web` installation pattern.
+- Installed on **RHEL 10.1** with hostname `srv-db`.
+- Connected to the `lab-int` network with DHCP-assigned connectivity.
+- Validated from both guest-side and host-side.
+- Autostart enabled after successful validation.
+- Screenshot set completed for the Phase 02 deployment workflow.
 
 ### 💾 `srv-storage`
 - Intended for shared storage workflows and later NFS/autofs exercises.
@@ -101,7 +105,7 @@ Update this file whenever one of the following events occurs:
 - **Phase 01:** Virtualization Host Ready ✅
 - **Phase 02:** First Guest Deployment ✅
 
-**Current validated guests:** `srv-admin`, `srv-web`  
-**Next planned guests:** `srv-db`, `srv-storage`
+**Current validated guests:** `srv-admin`, `srv-web`, `srv-db`  
+**Next planned guest:** `srv-storage`
 
-The remaining guests stay in `Pending` state until their deployments begin.
+The remaining guest stays in `Pending` state until deployment begins.
