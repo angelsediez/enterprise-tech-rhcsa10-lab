@@ -25,7 +25,7 @@ The following environment settings apply to the virtualization host where these 
 | Guest | Role | vCPU | RAM | Disk | Firmware | Install Status | Validation | Screenshots |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- | :--- |
 | `srv-admin` | Administration and management node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ✅ Installed | ✅ Validated | ✅ Complete |
-| `srv-web` | Web service node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ⚪ Pending | ⚪ Pending | ⚪ Pending |
+| `srv-web` | Web service node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ✅ Installed | ✅ Validated | ✅ Complete |
 | `srv-db` | Database service node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ⚪ Pending | ⚪ Pending | ⚪ Pending |
 | `srv-storage` | Shared storage and NFS/autofs support node | 2 | 4096 | 60G qcow2 | UEFI / OVMF | ⚪ Pending | ⚪ Pending | ⚪ Pending |
 
@@ -37,21 +37,21 @@ The following environment settings apply to the virtualization host where these 
 ## 🚦 Status Definitions
 
 ### Install Status
-- `⚪ Pending` — Resource planned but not yet created.
-- `🟡 In progress` — Currently being installed or configured.
-- `✅ Installed` — OS installation completed successfully.
-- `🔴 Rebuild required` — Existing guest needs to be destroyed and re-deployed.
+- ⚪ Pending — Resource planned but not yet created.
+- 🟡 In progress — Currently being installed or configured.
+- ✅ Installed — OS installation completed successfully.
+- 🔴 Rebuild required — Existing guest needs to be destroyed and re-deployed.
 
 ### Validation Status
-- `⚪ Pending` — No validation performed yet.
-- `🟡 Partially validated` — Basic connectivity or services confirmed.
-- `✅ Validated` — Guest validated according to the current runbook scope.
-- `🔴 Validation failed` — Issues found during post-install checks.
+- ⚪ Pending — No validation performed yet.
+- 🟡 Partially validated — Basic connectivity or services confirmed.
+- ✅ Validated — Guest validated according to the current runbook scope.
+- 🔴 Validation failed — Issues found during post-install checks.
 
 ### Screenshot Status
-- `⚪ Pending` — No screenshots captured yet.
-- `🟡 Partial` — Some evidence captured, but documentation is incomplete.
-- `✅ Complete` — Expected screenshot set captured for the current phase.
+- ⚪ Pending — No screenshots captured yet.
+- 🟡 Partial — Some evidence captured, but documentation is incomplete.
+- ✅ Complete — Expected screenshot set captured for the current phase.
 
 ---
 
@@ -68,8 +68,12 @@ The following environment settings apply to the virtualization host where these 
 - This guest now serves as the baseline installation pattern for the remaining nodes.
 
 ### 🌐 `srv-web`
-- Intended for web-facing service work in later phases.
-- Should reuse the validated `srv-admin` installation pattern.
+- Successfully deployed using the validated `srv-admin` installation pattern.
+- Installed on **RHEL 10.1** with hostname `srv-web`.
+- Connected to the `lab-int` network with DHCP-assigned connectivity.
+- Validated from both guest-side and host-side.
+- Autostart enabled after successful validation.
+- Screenshot set completed for the Phase 02 deployment workflow.
 
 ### 🗄️ `srv-db`
 - Intended for database-related service work in later phases.
@@ -84,7 +88,7 @@ The following environment settings apply to the virtualization host where these 
 ## 🔄 Tracking & Maintenance
 Update this file whenever one of the following events occurs:
 
-1. A guest is defined or created in `libvirt`
+1. A guest is defined or created in libvirt
 2. Hardware resources (RAM, vCPU, disk) are modified
 3. Installation or validation phases are completed
 4. Screenshots are captured and stored in the assets folder
@@ -97,7 +101,7 @@ Update this file whenever one of the following events occurs:
 - **Phase 01:** Virtualization Host Ready ✅
 - **Phase 02:** First Guest Deployment ✅
 
-**Current validated guest:** `srv-admin`  
-**Next planned guests:** `srv-web`, `srv-db`, `srv-storage`
+**Current validated guests:** `srv-admin`, `srv-web`  
+**Next planned guests:** `srv-db`, `srv-storage`
 
 The remaining guests stay in `Pending` state until their deployments begin.
