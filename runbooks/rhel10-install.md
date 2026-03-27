@@ -1,9 +1,9 @@
 # 📖 RHEL 10.1 Guest Installation Runbook
 
 ## 🎯 Objective
-Deploy the first RHEL 10.1 guest VM (`srv-admin`) on the Fedora 43 virtualization host using the existing libvirt storage pool, internal lab network, and stable ISO path.
+Deploy the Phase 02 RHEL 10.1 guest set on the Fedora 43 virtualization host using the existing libvirt storage pool, internal lab network, and stable ISO path.
 
-This runbook documents the repeatable installation workflow used for the first guest, which will be reused for:
+This runbook documents the validated installation workflow first used for `srv-admin` and then successfully reused for:
 * `srv-web`
 * `srv-db`
 * `srv-storage`
@@ -39,7 +39,7 @@ This runbook documents the repeatable installation workflow used for the first g
 | **Network** | `lab-int` |
 | **ISO Path** | `/var/lib/libvirt/boot/rhel-10.1-x86_64-dvd.iso` |
 
-### Guest Model (`srv-admin`)
+### Reference Guest Model (`srv-admin`)
 | Resource | Specification |
 | :--- | :--- |
 | **vCPU** | 2 |
@@ -47,6 +47,9 @@ This runbook documents the repeatable installation workflow used for the first g
 | **Disk** | 60 GiB (qcow2) |
 | **Firmware** | UEFI / OVMF |
 | **OS Info** | `rhel10.1` |
+
+> [!NOTE]
+> The same baseline guest model was reused for `srv-web`, `srv-db`, and `srv-storage` during Phase 02.
 
 > [!TIP]
 > Adjust guest resources later only if the workload justifies it.
@@ -115,17 +118,20 @@ sudo virt-install \
   --cdrom "$ISO"
 ```
 * **Note:** If the console does not appear, use `virt-manager` to connect manually.
+* **Console fallback:** If `virt-viewer` freezes or the graphical console becomes unresponsive, relaunch the guest connection through `virt-manager` or use `--noautoconsole` in a new install attempt.
+* **Phase 02 reuse:** The same `virt-install` workflow was reused for `srv-web`, `srv-db`, and `srv-storage`, changing only the guest name and in-guest hostname.
 
 ---
 
 ## 📝 Anaconda Installer Guidelines
 During installation, the following baseline choices were used:
 
-* **Hostname:** `srv-admin`
+* **Hostname:** `srv-admin` for the reference deployment, then `srv-web`, `srv-db`, and `srv-storage` for the remaining guests.
 * **Installation Destination:** Automatic layout on the 60 GiB VirtIO disk.
 * **Software Selection:** Server (Keep it simple, avoid optional roles for now).
 * **Network:** Enabled and connected to `lab-int` using DHCP.
 * **Security:** Root account enabled; initial local user `jdoe` created with administrative privileges.
+* **Pattern Consistency:** The same baseline installation choices were reused across all four Phase 02 guests.
 
 ---
 
@@ -136,6 +142,7 @@ During installation, the following baseline choices were used:
 cat /etc/os-release
 hostnamectl
 ip -brief address
+systemctl is-system-running || true
 systemctl get-default
 lsblk
 ```
@@ -168,6 +175,8 @@ To remove the guest and rebuild from scratch:
 virsh -c qemu:///system destroy "$VM_NAME" || true
 virsh -c qemu:///system undefine "$VM_NAME" --nvram || true
 virsh -c qemu:///system vol-delete --pool "$VM_POOL" "${VM_NAME}.qcow2" || true
+virsh -c qemu:///system dominfo "$VM_NAME" || true
+virsh -c qemu:///system vol-list "$VM_POOL"
 ```
 
 ---
@@ -175,7 +184,7 @@ virsh -c qemu:///system vol-delete --pool "$VM_POOL" "${VM_NAME}.qcow2" || true
 ## 📸 Artifacts & Documentation
 ### Screenshots to Capture (`assets/screenshots/phase-02/`)
 
-**Core Evidence:**
+**srv-admin Core Evidence:**
 * `P02-01-iso-pool-network-ready.png`
 * `P02-02-srv-admin-volume-created.png`
 * `P02-03-virt-install-srv-admin.png`
@@ -184,19 +193,74 @@ virsh -c qemu:///system vol-delete --pool "$VM_POOL" "${VM_NAME}.qcow2" || true
 * `P02-06-anaconda-network-hostname-srv-admin.png`
 * `P02-08-srv-admin-host-side-validation.png`
 
-**Additional Detail:**
+**srv-admin Additional Detail:**
 * `P02-04b-anaconda-software-selection-srv-admin.png`
 * `P02-07a-srv-admin-os-and-hostname-validation.png`
 * `P02-07b-srv-admin-network-target-storage-validation.png`
 * `P02-06b-anaconda-root-account-srv-admin.png`
 
+**srv-web Core Evidence:**
+* `P02-09-virt-install-srv-web.png`
+* `P02-11-anaconda-network-hostname-srv-web.png`
+* `P02-14-srv-web-first-boot-validation.png`
+* `P02-15-srv-web-host-side-validation.png`
+
+**srv-web Additional Detail:**
+* `P02-10-anaconda-installation-destination-srv-web.png`
+* `P02-12-anaconda-installation-summary-srv-web.png`
+* `P02-13-installation-complete-srv-web.png`
+
+**srv-db Core Evidence:**
+* `P02-16-virt-install-srv-db.png`
+* `P02-17-anaconda-installation-destination-srv-db.png`
+* `P02-18-anaconda-network-hostname-srv-db.png`
+* `P02-19-anaconda-installation-summary-srv-db.png`
+* `P02-20-installation-complete-srv-db.png`
+* `P02-21-srv-db-first-boot-validation.png`
+* `P02-22-srv-db-host-side-validation.png`
+
+**srv-db Additional Detail:**
+* `P02-19b-anaconda-software-selection-srv-db.png`
+* `P02-19c-anaconda-root-account-srv-db.png`
+* `P02-19d-anaconda-user-creation-srv-db.png`
+* `P02-22b-srv-db-autostart-and-dominfo.png`
+
+**srv-storage Core Evidence:**
+* `P02-23-virt-install-srv-storage.png`
+* `P02-24-anaconda-installation-destination-srv-storage.png`
+* `P02-25-anaconda-network-hostname-srv-storage.png`
+* `P02-26-anaconda-installation-summary-srv-storage.png`
+* `P02-27-installation-complete-srv-storage.png`
+* `P02-28-srv-storage-first-boot-validation.png`
+* `P02-29-srv-storage-host-side-validation.png`
+
+**srv-storage Additional Detail:**
+* `P02-26b-anaconda-software-selection-srv-storage.png`
+* `P02-26c-anaconda-root-account-srv-storage.png`
+* `P02-26d-anaconda-user-creation-srv-storage.png`
+* `P02-29b-srv-storage-autostart-and-dominfo.png`
+
+---
+
+## ✅ Phase 02 Completion Note
+
+The validated installation pattern documented in this runbook was successfully reused to deploy:
+
+* `srv-web`
+* `srv-db`
+* `srv-storage`
+
+All four planned Phase 02 guests were installed on RHEL 10.1, attached to `lab-int`, validated from both guest-side and host-side, and configured with libvirt autostart after successful validation.
+
 ---
 
 ## 🏁 Outcome
-Successful completion of this runbook produces:
-* A working `srv-admin` guest.
-* A validated RHEL 10.1 installation pattern.
-* Confirmed connectivity on `lab-int` and host-side visibility.
-* Autostart enabled for the primary management node.
+Successful completion of this runbook produced:
 
-The lab now has a solid baseline for the remaining nodes: `srv-web`, `srv-db`, and `srv-storage`.
+* A working `srv-admin` reference guest
+* A validated RHEL 10.1 installation pattern
+* Confirmed connectivity on `lab-int` and host-side visibility
+* Autostart enabled after successful validation
+* Successful reuse of the same deployment pattern for `srv-web`, `srv-db`, and `srv-storage`
+
+The lab now has a complete four-node RHEL 10.1 baseline for the next infrastructure and service configuration phases.
