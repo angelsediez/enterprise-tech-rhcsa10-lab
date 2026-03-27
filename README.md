@@ -123,7 +123,7 @@ enterprise-tech-rhel10-lab/
 
 ---
 
-## ✅ Current Status
+## ✅ Active Development
 
 > [!IMPORTANT]
 > **Status:** Active Development  
