@@ -1,27 +1,26 @@
 # 🔐 Phase 04 - Identity, SSH, and Permissions
 
 ## 🎯 Objective
-Establish and validate a controlled Phase 04 baseline for local identity management, service security, and filesystem access control. This phase ensures that the lab environment has a secure and predictable foundation for user operations and remote access.
+Establish and validate a controlled Phase 04 baseline for local identity management, SSH service inspection, and filesystem access control across the guest set.
 
-This phase begins with a **full workflow on `srv-admin`** and then reuses a **shorter validation pattern** on the remaining guests.
+This phase begins with a **full workflow on `srv-admin`** and then reuses a **shorter validation pattern** on `srv-web`, `srv-db`, and `srv-storage`.
 
 ---
 
 ## 🔍 Scope
 
 ### **Included in this phase:**
-* **Identity Management:** Validating local users, group memberships, and UID/GID consistency.
-* **Privileged Access:** Verifying `sudo` functionality and policy for the administrative user.
-* **SSH Baseline:** Inspecting the `sshd` service state, listening ports, and basic configuration hardening.
-* **Permissions & Ownership:** Validating `chmod`, `chown`, and `chgrp` behavior on controlled workspace files.
-* **Link Security:** Reviewing permission behavior on symbolic and hard links created in Phase 03.
-* **Evidence:** Capturing multi-point validation results via screenshots.
+* **Identity Management:** Validating local users, group memberships, and identity evidence files.
+* **Privileged Access:** Verifying functional `sudo` capability for the administrative user.
+* **SSH Baseline:** Inspecting `sshd` service state, listener visibility, and active configuration lines.
+* **Permissions & Ownership:** Validating `chmod` and `chgrp` behavior on controlled workspace files.
+* **Evidence:** Capturing multi-point validation results via screenshots and stored command output.
 
 ### **Excluded (Later Phases):**
 * Advanced SSH hardening (Key-only auth, custom ports).
-* SSH Key-Pair distribution between nodes (Automation prep).
-* Centralized Identity (IPA/Active Directory integration).
-* ACL-focused workflows (Advanced Access Control Lists).
+* SSH key distribution between nodes.
+* Centralized identity integration.
+* ACL-focused workflows beyond basic permissions.
 
 ---
 
@@ -31,33 +30,32 @@ This phase begins with a **full workflow on `srv-admin`** and then reuses a **sh
 | :--- | :--- |
 | **Phase Focus** | Identity, SSH, and Permissions |
 | **Primary Guest** | `srv-admin` (Full Reference) |
-| **Secondary Guests** | `srv-web`, `srv-db`, `srv-storage` (Validation) |
+| **Secondary Guests** | `srv-web`, `srv-db`, `srv-storage` (Validation Pattern) |
 | **Guest Platform** | Red Hat Enterprise Linux 10.1 |
 | **Workspace Root** | `~/lab/f04-identity-ssh-permissions` |
-| **Status** | ⚪ Not Started |
+| **Status** | ✅ Complete |
 
 ---
 
 ## 🛠️ Execution Strategy
 The phase follows the "Master & Replicate" model established in previous milestones:
 
-1.  **Full Reference Workflow:** Execute the complete suite of identity and permission tests on `srv-admin`.
-2.  **Service Hardening Review:** Perform a baseline inspection of the SSH daemon and its default security posture.
-3.  **Validation Pattern:** Apply a condensed version of these checks on `srv-web`, `srv-db`, and `srv-storage` to ensure environment parity.
-4.  **Evidence:** Capture screenshots of command results and directory structures.
-5.  **Closure:** Confirm that the validated Phase 04 pattern now exists across all four guests.
+1. **Full Reference Workflow:** Execute the complete identity, `sudo`, SSH, and permissions workflow on `srv-admin`.
+2. **Validation Pattern:** Apply a condensed version of the same checks on `srv-web`, `srv-db`, and `srv-storage`.
+3. **Evidence:** Capture screenshots of command results and final workspace state.
+4. **Closure:** Confirm that the validated Phase 04 pattern now exists across all four guests.
 
 ---
 
 ## 📐 Workspace Design
-Phase 04 operations are isolated within a dedicated directory structure to prevent interference with system-critical files:
+Phase 04 operations are isolated within a dedicated directory structure:
 
 ```text
 ~/lab/f04-identity-ssh-permissions/
-├── identity/       # Logs of user/group lookups
-├── ssh/            # Service status and config exports
-├── permissions/    # Controlled chmod/chown test files
-└── tmp/            # Temporary link and access tests
+├── identity/       # Stored identity evidence
+├── ssh/            # SSH inspection workspace
+├── permissions/    # Controlled chmod/chgrp test files
+└── tmp/            # Temporary tests
 ```
 
 ---
@@ -67,79 +65,133 @@ Phase 04 operations are isolated within a dedicated directory structure to preve
 ### **Guest Status**
 | Guest | Role | Status |
 | :--- | :--- | :--- |
-| `srv-admin` | Reference Node | ⚪ Pending |
-| `srv-web` | Web Service | ⚪ Pending |
-| `srv-db` | Database Node | ⚪ Pending |
-| `srv-storage` | Storage Node | ⚪ Pending |
+| `srv-admin` | Reference Node | ✅ Completed & Validated |
+| `srv-web` | Web Service | ✅ Validation Pattern Completed |
+| `srv-db` | Database Node | ✅ Validation Pattern Completed |
+| `srv-storage` | Storage Node | ✅ Validation Pattern Completed |
 
-### **Hitos de la Fase 04**
-* [ ] Phase 04 workspace created across all guests.
-* [ ] Identity baseline (ID/Groups) validated on `srv-admin`.
-* [ ] `sudo` access confirmed for the administrative account.
-* [ ] SSH service status and port binding (`22/tcp`) verified.
-* [ ] Ownership and Permission workflows (Standard/Numeric) documented.
-* [ ] Validation pattern replicated on secondary guests.
+### **Phase 04 Achievements**
+* [x] Phase 04 workspace created across all guests.
+* [x] Identity baseline validated on `srv-admin`.
+* [x] Identity evidence files created on `srv-admin`.
+* [x] `sudo` access confirmed for the administrative account.
+* [x] SSH service status and baseline configuration verified.
+* [x] Ownership and permission workflows documented on `srv-admin`.
+* [x] Validation pattern replicated on `srv-web`, `srv-db`, and `srv-storage`.
+* [x] Screenshot evidence captured for all planned validation points.
 
 ---
 
-## 🧪 Planned srv-admin Validation Areas
+## 🧪 srv-admin Validation Areas
 
 ### 1. Identity Baseline
-Checking the current user context and group environment:
 ```bash
-whoami && id
-getent passwd $(whoami)
-getent group | grep $(whoami)
+whoami && id && groups
+getent passwd root
+getent passwd jdoe
+getent group root
+getent group wheel
 ```
 
-### 2. Sudo Validation
-Confirming the ability to perform privileged operations:
+### 2. Identity Evidence
+```bash
+whoami > identity/whoami.txt
+id > identity/id.txt
+groups > identity/groups.txt
+getent passwd jdoe > identity/passwd-jdoe.txt
+getent group wheel > identity/group-wheel.txt
+find identity -maxdepth 1 -type f | sort
+```
+
+### 3. sudo Validation
 ```bash
 sudo -l
-sudo hostnamectl # Sample privileged command
+sudo id
+sudo ls -ld /root
 ```
 
-### 3. SSH Service Baseline
-Reviewing the current state of remote access security:
+### 4. SSH Service Baseline
 ```bash
-systemctl status sshd
-ss -tulpn | grep :22
-sudo sshd -T | grep -E 'permitrootlogin|passwordauthentication'
+systemctl status sshd --no-pager -l
+ss -tulpn | grep ssh || true
+sudo grep -Ev '^\s*#|^\s*$' /etc/ssh/sshd_config
+ls -l /etc/ssh
 ```
 
-### 4. Ownership and Permissions
-Testing filesystem security controls:
+### 5. Ownership and Permissions
 ```bash
-ls -l permissions/
-chmod 640 permissions/test-file
-chown :users permissions/test-file
-ls -li permissions/test-file
+mkdir -p permissions/labdir
+touch permissions/labdir/file-a permissions/labdir/file-b
+echo "phase04 srv-admin file-a" > permissions/labdir/file-a
+echo "phase04 srv-admin file-b" > permissions/labdir/file-b
+chgrp wheel permissions/labdir/file-a
+chmod 640 permissions/labdir/file-a
+chmod 600 permissions/labdir/file-b
+chmod 750 permissions/labdir
+ls -ld permissions/labdir
+ls -l permissions/labdir
+stat permissions/labdir/file-a
+stat permissions/labdir/file-b
+```
+
+### 6. Final Workspace Validation
+```bash
+find ~/lab/f04-identity-ssh-permissions -maxdepth 3 -type f | sort
+ls -ld ~/lab/f04-identity-ssh-permissions/permissions/labdir
+ls -l ~/lab/f04-identity-ssh-permissions/permissions/labdir
+cat ~/lab/f04-identity-ssh-permissions/identity/id.txt
+```
+
+---
+
+## 🔁 Short Validation Pattern (srv-web, srv-db, srv-storage)
+The following condensed validation block was executed on each secondary guest:
+
+```bash
+mkdir -p ~/lab/f04-identity-ssh-permissions/{identity,ssh,permissions}
+cd ~/lab/f04-identity-ssh-permissions
+whoami > identity/whoami.txt
+id > identity/id.txt
+groups > identity/groups.txt
+sudo -l
+systemctl status sshd --no-pager -l | head -n 20
+mkdir -p permissions/labdir
+touch permissions/labdir/node-file
+echo "phase04 $(hostnamectl --static)" > permissions/labdir/node-file
+chmod 640 permissions/labdir/node-file
+ls -l permissions/labdir/node-file
+find ~/lab/f04-identity-ssh-permissions -maxdepth 3 -type f | sort
 ```
 
 ---
 
 ## 📸 Screenshot Inventory
-All evidence will be stored in `assets/screenshots/phase-04/`:
+All evidence is stored in `assets/screenshots/phase-04/`:
 
 | ID | Description | Target |
 | :--- | :--- | :--- |
-| **P04-01** | Identity baseline (id/getent) | `srv-admin` |
-| **P04-02** | Sudo access validation | `srv-admin` |
-| **P04-03** | SSH service status and port binding | `srv-admin` |
-| **P04-04** | Permissions and Ownership validation | `srv-admin` |
+| **P04-01** | Identity baseline validation | `srv-admin` |
+| **P04-02** | `sudo` access validation | `srv-admin` |
+| **P04-03** | SSH service baseline | `srv-admin` |
+| **P04-04** | Permissions and ownership validation | `srv-admin` |
 | **P04-05** | Final workspace validation | `srv-admin` |
-| **P04-06..08**| Replicated validation pattern | `srv-web/db/storage` |
+| **P04-06** | Final replicated workspace | `srv-web` |
+| **P04-07** | Final replicated workspace | `srv-db` |
+| **P04-08** | Final replicated workspace | `srv-storage` |
 
 ---
 
 ## 🔗 Related Files
 * `runbooks/f04-identity-ssh-permissions.md` — Detailed step-by-step guide.
+* `validation/04-identity-ssh-permissions-checklist.md` — Phase 04 validation checklist.
 * `phases/03-shell-files-docs/README.md` — Previous phase report.
 * `notes/guest-inventory.md` — Lab VM hardware and status tracker.
 
 ---
 
 ## 🏁 Current Outcome
-Phase 04 is **Not Started** ⚪.
+Phase 04 is **complete** ✅.
 
-The lab infrastructure is currently awaiting the execution of identity hardening and permission validation. The baseline established in Phase 03 is ready to be secured.
+A full identity, sudo, SSH baseline, and permissions workflow was executed and validated on `srv-admin`. A shorter validation pattern was then successfully reused on `srv-web`, `srv-db`, and `srv-storage`.
+
+The lab now has a documented and validated Phase 04 identity, SSH, and permissions baseline across all four guests, providing a clean foundation for the next software and scripting phase.
