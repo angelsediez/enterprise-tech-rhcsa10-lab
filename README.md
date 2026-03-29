@@ -21,6 +21,8 @@ The lab is organized into **execution phases**, supported by professional runboo
 
 Phase 02 established a validated four-node RHEL 10.1 baseline that will support the next infrastructure and service configuration phases.
 
+Phase 03 established a validated shell, files, and local documentation workspace across all four guests, creating a clean baseline for the next identity, SSH, and permissions phase.
+
 ---
 
 ## 🏗️ Lab Nodes
@@ -93,7 +95,7 @@ enterprise-tech-rhel10-lab/
 - [x] **Phase 00** — Bootstrap and repository setup ✅
 - [x] **Phase 01** — Virtualization host preparation ✅
 - [x] **Phase 02** — Four-node RHEL 10.1 guest deployment baseline ✅
-- [ ] **Phase 03** — Shell, files, and local documentation ⚪
+- [x] **Phase 03** — Shell, files, and local documentation baseline ✅
 - [ ] **Phase 04** — Identity, SSH, and permissions ⚪
 - [ ] **Phase 05** — Software and scripting ⚪
 - [ ] **Phase 06** — Running systems and service management ⚪
@@ -116,10 +118,17 @@ enterprise-tech-rhel10-lab/
 
 ### 🚀 Guest Deployment (Phase 02)
 **RHEL 10.1 deployment workflow**
-![Deployment Workflow](assets/screenshots/phase-02/P02-26-anaconda-installation-summary-srv-storage.png)
+![Deployment Workflow](assets/screenshots/phase-02/P02-04-anaconda-installation-summary-srv-admin.png)
 
 **Final guest validated**
 ![Final Guest Validated](assets/screenshots/phase-02/P02-29-srv-storage-host-side-validation.png)
+
+### 🐚 Shell, Files, and Local Documentation (Phase 03)
+**srv-admin local documentation and shell workflow**
+![Phase 03 Local Docs](assets/screenshots/phase-03/P03-01-local-docs-srv-admin.png)
+
+**Replicated workspace validated on secondary guests**
+![Phase 03 Replicated Workspace](assets/screenshots/phase-03/P03-10-final-workspace-srv-storage.png)
 
 ---
 
@@ -128,22 +137,20 @@ enterprise-tech-rhel10-lab/
 > [!IMPORTANT]
 > **Status:** Active Development  
 > **Validated Guests:** `srv-admin`, `srv-web`, `srv-db`, `srv-storage`  
-> **Current Baseline:** Four-node RHEL 10.1 deployment complete  
-> **Next Milestone:** Phase 03 — Shell, files, and local documentation
+> **Current Baseline:** Four-node RHEL 10.1 deployment + Phase 03 shell/files/docs baseline complete  
+> **Next Milestone:** Phase 04 — Identity, SSH, and permissions
 
 ---
 
-## 🧪 Phase 02 Baseline Summary
+## 🧪 Current Lab Baseline Summary
 
 Phase 02 produced a validated four-node RHEL 10.1 guest set:
-
 - `srv-admin`
 - `srv-web`
 - `srv-db`
 - `srv-storage`
 
 All guests were deployed on the same baseline model:
-
 - UEFI / OVMF
 - 2 vCPU
 - 4096 MiB RAM
@@ -152,6 +159,16 @@ All guests were deployed on the same baseline model:
 - `enterprise-tech-images` storage pool
 - guest-side and host-side validation completed
 - libvirt autostart enabled after successful validation
+
+Phase 03 added a validated shell/files/docs workspace baseline across all four guests:
+- shell navigation and working context validation
+- stdout and stderr redirection into persistent files
+- grep and regex filtering workflows
+- file creation, copy, move, and removal
+- hard link and symbolic link validation
+- tar, gzip, and bzip2 archive handling
+- local documentation lookup with `man`, `--help`, and package docs
+- post-reboot persistence validated on `srv-admin`
 
 ---
 
@@ -166,11 +183,14 @@ This project is built as a hands-on Linux systems lab emphasizing:
 
 ## 🔗 Key Files
 * `runbooks/rhel10-install.md` — Main guest installation guide.
+* `runbooks/f03-shell-files-docs.md` — Phase 03 operational runbook.
 * `runbooks/kvm-libvirt-host-setup.md` — Phase 01 virtualization host setup and validation.
 * `notes/guest-inventory.md` — Current state of all lab VMs.
+* `phases/03-shell-files-docs/README.md` — Detailed Phase 03 shell/files/docs report.
 * `phases/02-rhel10-install/README.md` — Detailed Phase 02 deployment report.
 * `phases/01-virtualization-host/README.md` — Host preparation and validation record.
 * `phases/01-virtualization-host/lab-int.xml` — Internal libvirt network definition.
+* `validation/03-shell-files-docs-checklist.md` — Phase 03 validation checklist.
 * `docs/architecture.md` — High-level lab design.
 
 ---
