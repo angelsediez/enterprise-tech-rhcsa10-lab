@@ -23,6 +23,8 @@ Phase 02 established a validated four-node RHEL 10.1 baseline that will support 
 
 Phase 03 established a validated shell, files, and local documentation workspace across all four guests, creating a clean baseline for the next identity, SSH, and permissions phase.
 
+Phase 04 established a validated identity, SSH, and permissions baseline across all four guests, preparing the lab for the next software and scripting phase.
+
 ---
 
 ## 🏗️ Lab Nodes
@@ -96,7 +98,7 @@ enterprise-tech-rhel10-lab/
 - [x] **Phase 01** — Virtualization host preparation ✅
 - [x] **Phase 02** — Four-node RHEL 10.1 guest deployment baseline ✅
 - [x] **Phase 03** — Shell, files, and local documentation baseline ✅
-- [ ] **Phase 04** — Identity, SSH, and permissions ⚪
+- [x] **Phase 04** — Identity, SSH, and permissions baseline ✅
 - [ ] **Phase 05** — Software and scripting ⚪
 - [ ] **Phase 06** — Running systems and service management ⚪
 - [ ] **Phase 07** — Local storage and filesystems ⚪
@@ -118,7 +120,7 @@ enterprise-tech-rhel10-lab/
 
 ### 🚀 Guest Deployment (Phase 02)
 **RHEL 10.1 deployment workflow**
-![Deployment Workflow](assets/screenshots/phase-02/P02-04-anaconda-installation-summary-srv-admin.png)
+![Deployment Workflow](assets/screenshots/phase-02/P02-26-anaconda-installation-summary-srv-storage.png)
 
 **Final guest validated**
 ![Final Guest Validated](assets/screenshots/phase-02/P02-29-srv-storage-host-side-validation.png)
@@ -130,6 +132,13 @@ enterprise-tech-rhel10-lab/
 **Replicated workspace validated on secondary guests**
 ![Phase 03 Replicated Workspace](assets/screenshots/phase-03/P03-10-final-workspace-srv-storage.png)
 
+### 🔐 Identity, SSH, and Permissions (Phase 04)
+**srv-admin identity and SSH baseline**
+![Phase 04 Identity SSH](assets/screenshots/phase-04/P04-03-ssh-baseline-srv-admin.png)
+
+**Replicated permissions workspace validated on secondary guests**
+![Phase 04 Replicated Workspace](assets/screenshots/phase-04/P04-08-final-workspace-srv-storage.png)
+
 ---
 
 ## ✅ Active Development
@@ -137,8 +146,8 @@ enterprise-tech-rhel10-lab/
 > [!IMPORTANT]
 > **Status:** Active Development  
 > **Validated Guests:** `srv-admin`, `srv-web`, `srv-db`, `srv-storage`  
-> **Current Baseline:** Four-node RHEL 10.1 deployment + Phase 03 shell/files/docs baseline complete  
-> **Next Milestone:** Phase 04 — Identity, SSH, and permissions
+> **Current Baseline:** Four-node RHEL 10.1 deployment + Phase 03 shell/files/docs baseline + Phase 04 identity/SSH/permissions baseline complete  
+> **Next Milestone:** Phase 05 — Software and scripting
 
 ---
 
@@ -170,6 +179,14 @@ Phase 03 added a validated shell/files/docs workspace baseline across all four g
 - local documentation lookup with `man`, `--help`, and package docs
 - post-reboot persistence validated on `srv-admin`
 
+Phase 04 added a validated identity, SSH, and permissions baseline across all four guests:
+- local identity inspection and evidence capture
+- `sudo` access validation for the working user
+- SSH service baseline review and active configuration inspection
+- controlled ownership and group ownership testing
+- numeric permission validation with `chmod`
+- replicated identity and permissions workspace validation on `srv-web`, `srv-db`, and `srv-storage`
+
 ---
 
 ## 🧠 Design Philosophy
@@ -184,12 +201,15 @@ This project is built as a hands-on Linux systems lab emphasizing:
 ## 🔗 Key Files
 * `runbooks/rhel10-install.md` — Main guest installation guide.
 * `runbooks/f03-shell-files-docs.md` — Phase 03 operational runbook.
+* `runbooks/f04-identity-ssh-permissions.md` — Phase 04 operational runbook.
 * `runbooks/kvm-libvirt-host-setup.md` — Phase 01 virtualization host setup and validation.
 * `notes/guest-inventory.md` — Current state of all lab VMs.
+* `phases/04-identity-ssh-permissions/README.md` — Detailed Phase 04 identity/SSH/permissions report.
 * `phases/03-shell-files-docs/README.md` — Detailed Phase 03 shell/files/docs report.
 * `phases/02-rhel10-install/README.md` — Detailed Phase 02 deployment report.
 * `phases/01-virtualization-host/README.md` — Host preparation and validation record.
 * `phases/01-virtualization-host/lab-int.xml` — Internal libvirt network definition.
+* `validation/04-identity-ssh-permissions-checklist.md` — Phase 04 validation checklist.
 * `validation/03-shell-files-docs-checklist.md` — Phase 03 validation checklist.
 * `docs/architecture.md` — High-level lab design.
 
