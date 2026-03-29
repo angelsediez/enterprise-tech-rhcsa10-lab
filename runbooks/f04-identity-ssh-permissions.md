@@ -1,173 +1,117 @@
-# 🛠️ Phase 04 Runbook: Identity, SSH, and Permissions
+# ✅ Phase 04 Validation Checklist - Identity, SSH, and Permissions
 
-## 🎯 Objective
-Execute and validate a practical Phase 04 workflow focused on core identity security, service baselines, and filesystem access control. This runbook ensures that the administrative context and remote access services are correctly configured across the guest set.
+## 🎯 Purpose
+This checklist tracks the completion and validation status of Phase 04 across the four planned RHEL 10.1 guests. 
 
-This runbook uses `srv-admin` as the **full reference workflow** and applies a **shorter validation pattern** to `srv-web`, `srv-db`, and `srv-storage`.
-
----
-
-## 🔍 Scope
-
-### **Included in this phase:**
-* **Identity Inspection:** Validating local user and group states.
-* **Privilege Escalation:** Confirming functional `sudo` capability.
-* **Service Baseline:** Reviewing `sshd` status, port bindings, and config.
-* **Access Control:** Managing ownership and permissions with `chmod`/`chgrp`.
-* **Behavioral Testing:** Validating directory traversal and file read/write modes.
-
-### **Excluded (Later Phases):**
-* Advanced SSH hardening (Key-only auth, custom ports).
-* Distributed Identity (Centralized authentication).
-* SELinux policy customization and Firewalld exposure rules.
+It ensures that identity management, privileged access (`sudo`), SSH service baselines, and filesystem permissions have been inspected and documented according to the lab's operational standards.
 
 ---
 
-## 💻 Prerequisites
-Before proceeding, confirm the following status on the **Fedora 43 host**:
+## 💻 Guest Coverage
 
-| Requirement | Status | Verification Command |
-| :--- | :--- | :--- |
-| **Guest Baseline** | Phase 03 Complete | `ls -d ~/lab/f03-*` (Inside guests) |
-| **Guests Up** | All VMs Operational | `virsh list --all` |
-| **Access** | Local Console available | Login via `virt-viewer` or terminal |
-
----
-
-## 📍 Primary Workspace
-All work in this phase is performed under the following tree:
-
-```text
-~/lab/f04-identity-ssh-permissions/
-├── identity/       # User and group evidence
-├── permissions/    # Ownership and mode testing ground
-├── ssh/            # Service status and daemon config exports
-└── tmp/            # Temporary access and link tests
-```
+| Guest | Status |
+| :--- | :--- |
+| `srv-admin` | ✅ Complete |
+| `srv-web` | ✅ Complete |
+| `srv-db` | ✅ Complete |
+| `srv-storage` | ✅ Complete |
 
 ---
 
-## 🚀 Step-by-Step Execution: srv-admin (Full Workflow)
+## 🧪 Detailed Validation - `srv-admin`
 
-### 1. Workspace & Context Initialization
-```bash
-mkdir -p ~/lab/f04-identity-ssh-permissions/{identity,ssh,permissions,tmp}
-cd ~/lab/f04-identity-ssh-permissions
-pwd && whoami && hostnamectl --static
-```
-* **Validation:** `find ~/lab/f04-identity-ssh-permissions -maxdepth 1 -type d`.
+### Workspace and Shell Context
+- [x] Phase 04 workspace created under `~/lab/f04-identity-ssh-permissions/`
+- [x] Directory structure confirmed (`identity/`, `ssh/`, `permissions/`, `tmp/`)
+- [x] Working directory and user context validated
 
-### 2. Identity Baseline & Evidence
-```bash
-# Inspection
-id && groups
-getent passwd $(whoami)
-getent group wheel
+### Identity Baseline
+- [x] `whoami`, `id`, and `groups` output reviewed
+- [x] `getent` for `root` and `jdoe` validated
+- [x] `getent` for administrative groups (`root`, `wheel`) validated
+- [x] Identity evidence saved to `.txt` files in `identity/`
+- [x] Evidence files content verified with `cat`
 
-# Save Evidence
-whoami > identity/whoami.txt
-id > identity/id.txt
-groups > identity/groups.txt
-getent passwd $(whoami) > identity/passwd-user.txt
-getent group wheel > identity/group-wheel.txt
-```
+### Privileged Access (sudo)
+- [x] `sudo -l` returns the expected privilege set
+- [x] `sudo id` runs successfully (returning root context)
+- [x] `sudo ls -ld /root` confirms privileged access to restricted paths
 
-### 3. Sudo Validation
-Confirm privileged execution is active and allowed:
-```bash
-sudo -l
-sudo id
-sudo ls -ld /root
-```
+### SSH Service Baseline
+- [x] `sshd` service status is `active (running)`
+- [x] Port binding confirmed (typically `:22`) with `ss`
+- [x] Baseline configuration grep performed on `sshd_config`
+- [x] Directory listing of `/etc/ssh` completed
 
-### 4. SSH Service Baseline
-Reviewing the default security posture of the remote access daemon:
-```bash
-systemctl status sshd --no-pager -l
-ss -tulpn | grep ssh || true
-sudo grep -Ev '^\s*#|^\s*$' /etc/ssh/sshd_config
-```
+### Ownership and Permissions Management
+- [x] Test directory `permissions/labdir` created
+- [x] Test files `file-a` and `file-b` created with sample content
+- [x] Group ownership of `file-a` changed to `wheel`
+- [x] Numeric mode `640` applied to `file-a`
+- [x] Numeric mode `600` applied to `file-b`
+- [x] Directory mode `750` applied to `labdir`
+- [x] Final modes validated with `stat` or `ls -l`
 
-### 5. Ownership & Permission Management
-```bash
-# Create test files
-mkdir -p permissions/labdir
-touch permissions/labdir/file-a permissions/labdir/file-b
-echo "phase04 srv-admin file-a" > permissions/labdir/file-a
-echo "phase04 srv-admin file-b" > permissions/labdir/file-b
-
-# Group Ownership (using 'wheel' as a safe baseline)
-chgrp wheel permissions/labdir/file-a
-
-# Permission Modes
-chmod 640 permissions/labdir/file-a
-chmod 600 permissions/labdir/file-b
-chmod 750 permissions/labdir
-```
-* **Verification:** `ls -ld permissions/labdir` and `stat permissions/labdir/file-a`.
-
-### 6. Post-Reboot Persistence (Final Check)
-```bash
-sudo systemctl reboot
-# After reconnecting:
-ls -l ~/lab/f04-identity-ssh-permissions/permissions/labdir
-```
+### Final Workspace Integrity
+- [x] Final recursive listing of Phase 04 workspace completed
+- [x] All evidence files are readable and formatted correctly
 
 ---
 
-## 🔁 Short Validation Pattern (srv-web, srv-db, srv-storage)
-Run this block on each secondary guest to ensure consistency:
-
-```bash
-mkdir -p ~/lab/f04-identity-ssh-permissions/{identity,ssh,permissions}
-cd ~/lab/f04-identity-ssh-permissions
-whoami > identity/whoami.txt && id > identity/id.txt
-sudo -l
-systemctl status sshd --no-pager -l | head -n 15
-mkdir -p permissions/labdir
-echo "phase04 $(hostnamectl --static)" > permissions/labdir/node-file
-chmod 640 permissions/labdir/node-file
-find ~/lab/f04-identity-ssh-permissions -maxdepth 3 -type f | sort
-```
+## 🔁 Short Validation - `srv-web`
+- [x] Phase 04 workspace and subdirectories created
+- [x] Identity evidence files (`whoami`, `id`, `groups`) saved
+- [x] `sudo -l` capability confirmed
+- [x] `sshd` status head (20 lines) reviewed
+- [x] `node-file` created and `640` permissions applied
+- [x] Final workspace listing completed
+- [x] Screenshot captured as `P04-06-final-workspace-srv-web.png`
 
 ---
 
-## 🧪 Validation Checklist
-
-### **srv-admin (Detailed)**
-- [ ] Identity evidence files (`whoami`, `id`, `groups`) created.
-- [ ] `sudo -l` confirms the user has administrative privileges.
-- [ ] SSH listener confirmed on `0.0.0.0:22` or `[::]:22`.
-- [ ] File-a belongs to group `wheel`.
-- [ ] Numeric modes (640/600/750) validated via `stat`.
-
-### **Secondary Guests**
-- [ ] Identity files reflect correct Guest hostname.
-- [ ] `node-file` permissions set to `-rw-r-----`.
-- [ ] SSH service is active and running.
+## 🔁 Short Validation - `srv-db`
+- [x] Phase 04 workspace and subdirectories created
+- [x] Identity evidence files saved
+- [x] `sudo -l` capability confirmed
+- [x] `sshd` status reviewed
+- [x] `node-file` created and `640` permissions applied
+- [x] Final workspace listing completed
+- [x] Screenshot captured as `P04-07-final-workspace-srv-db.png`
 
 ---
 
-## 🧯 Short Troubleshooting
-1.  **`sudo -l` fails:** Verify the user is in the `wheel` group using `id`. If missing, add with `usermod -aG wheel <user>`.
-2.  **`chgrp wheel` fails:** Check if the group exists with `getent group wheel`. On RHEL, this group is standard for admins.
-3.  **Broken directory traversal:** If you can't enter `labdir`, check that the directory has the `x` (execute) bit for the owner/group.
+## 🔁 Short Validation - `srv-storage`
+- [x] Phase 04 workspace and subdirectories created
+- [x] Identity evidence files saved
+- [x] `sudo -l` capability confirmed
+- [x] `sshd` status reviewed
+- [x] `node-file` created and `640` permissions applied
+- [x] Final workspace listing completed
+- [x] Screenshot captured as `P04-08-final-workspace-srv-storage.png`
 
 ---
 
-## 📸 Expected Screenshots
-Evidence stored in `assets/screenshots/phase-04/`:
-
-| ID | Description | Guest |
-| :--- | :--- | :--- |
-| **P04-01** | Identity baseline results | `srv-admin` |
-| **P04-02** | Sudo validation and privileged `id` | `srv-admin` |
-| **P04-03** | SSH service status and config grep | `srv-admin` |
-| **P04-04** | Permissions and Ownership stat output | `srv-admin` |
-| **P04-05** | Final workspace tree listing | `srv-admin` |
-| **P04-06..08** | Replicated validation workspaces | `srv-web/db/storage` |
+## 📸 Screenshot Inventory
+- [x] `P04-01-identity-baseline-srv-admin.png`
+- [x] `P04-02-sudo-validation-srv-admin.png`
+- [x] `P04-03-ssh-baseline-srv-admin.png`
+- [x] `P04-04-permissions-validation-srv-admin.png`
+- [x] `P04-05-final-workspace-srv-admin.png`
+- [x] `P04-06-final-workspace-srv-web.png`
+- [x] `P04-07-final-workspace-srv-db.png`
+- [x] `P04-08-final-workspace-srv-storage.png`
 
 ---
 
-## 🏁 Outcome
-Successful completion of this runbook leaves a validated Phase 04 identity, SSH, and permissions workspace on all guests. The environment is now secured for more advanced network and service configurations in later phases.
+## 🏁 Phase 04 Exit Criteria
+Phase 04 is considered complete when:
+
+- [x] Administrative identity and groups are validated across the guest set
+- [x] Sudo access is confirmed as functional for all nodes
+- [x] SSH service baseline is documented for all nodes
+- [x] Standard ownership and numeric permission changes are validated
+- [x] Workspace evidence is complete and screenshots are captured
+- [x] `phases/04-identity-ssh-permissions/README.md` updated with completion status
+- [x] `runbooks/f04-identity-ssh-permissions.md` updated with completion status
+- [x] `validation/04-identity-ssh-permissions-checklist.md` reviewed and completed
+- [x] `README.md` updated to reflect Phase 04 completion
