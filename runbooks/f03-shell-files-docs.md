@@ -15,42 +15,36 @@ This runbook uses `srv-admin` as the **full reference workflow** and applies a *
 * Stdout/Stderr redirection and logging.
 * Text creation and filtering using `grep` and Regular Expressions.
 * Standard file operations (Create, Copy, Move, Remove).
+* Text editing with `vi`.
 * Hard links and Symbolic links (Inode validation).
 * Archive creation (`tar`) and compression (`gzip`, `bzip2`).
-* Local documentation lookup (`man`, `info`, `rpm`).
+* Local documentation lookup (`man`, `info`, `rpm`, `--help`).
 * Post-reboot persistence validation on `srv-admin`.
-
-### **Excluded (Later Phases):**
-* SSH hardening and advanced permissions.
-* SELinux policy tuning.
-* Network and Firewall service exposure.
-* NFS/autofs implementation.
 
 ---
 
 ## 💻 Prerequisites
-Before proceeding, confirm the following status on the **Fedora 43 host**:
+Before proceeding, confirm the following baseline conditions:
 
 | Requirement | Status | Verification Command |
 | :--- | :--- | :--- |
 | **Guest Baseline** | Phase 02 Complete | `virsh list --all` |
 | **Network** | `lab-int` Active | `virsh net-info lab-int` |
-| **Accessibility** | User login available | `ssh <user>@srv-admin` |
-| **Workspace Ready** | No previous F03 data | `ls -d ~/lab/f03-*` |
+| **Accessibility** | Guest login available | Console login via `virt-viewer` or direct access |
+| **Workspace Ready** | No previous F03 data | Check inside guests: `ls -d ~/lab/f03-*` |
 
 ---
 
 ## 📍 Primary Workspace Structure
-All work in this phase is performed under the following directory tree:
+The Phase 03 workspace is organized as follows:
 
 ```text
 ~/lab/f03-shell-files-docs/
-├── archive/    # Packaging and compression tests
-├── docs/       # Manual page exports and help samples
+├── archive/    # Tarballs, gzip, bzip2, and extraction tests
 ├── links/      # Hard and symbolic link verification
 ├── streams/    # Redirection logs (stdout/stderr)
-├── text/       # Sample data and regex targets
-└── tmp/        # Temporary playground
+├── text/       # Sample data and edited text files
+└── tmp/        # Temporary extraction and testing area
 ```
 
 ---
@@ -59,12 +53,10 @@ All work in this phase is performed under the following directory tree:
 
 ### 1. Workspace & Context Initialization
 ```bash
-mkdir -p ~/lab/f03-shell-files-docs/{docs,text,streams,archive,links,tmp}
+mkdir -p ~/lab/f03-shell-files-docs/{text,streams,archive,links,tmp}
 cd ~/lab/f03-shell-files-docs
 pwd && whoami && hostnamectl --static
 ```
-* **Purpose:** Creates a clean environment and confirms the guest identity.
-* **Validation:** Run `find ~/lab/f03-shell-files-docs -maxdepth 1 -type d`.
 
 ### 2. Stream Management (Stdout/Stderr)
 ```bash
@@ -73,17 +65,16 @@ pwd >> streams/hostname.txt
 ls /no/such/path 2> streams/error.log
 cat streams/hostname.txt && cat streams/error.log
 ```
-* **Purpose:** Validates output redirection and separate error logging.
-* **Validation:** Confirm `error.log` contains the "No such file" message.
 
 ### 3. Text Processing & Regex Filtering
 ```bash
 printf "alpha\nbeta\nalpha-01\nweb01\ndb01\nstorage01\n" > text/sample.txt
+grep -n 'alpha' text/sample.txt
 grep -E '^(alpha|web|db|storage)[-]?[0-9]*$' text/sample.txt > text/regex-hit.txt
+cat text/regex-hit.txt
 grep -En '^(root|jdoe):' /etc/passwd > text/passwd-match.txt
+cat text/passwd-match.txt
 ```
-* **Purpose:** Creates controlled data and validates extended regex patterns.
-* **Validation:** `cat text/regex-hit.txt` should show all lines except "beta".
 
 ### 4. File Operations & Inode Linking
 ```bash
@@ -92,30 +83,58 @@ mkdir -p text/src && touch text/src/file1 text/src/file2
 cp text/src/file1 text/src/file1.copy
 mv text/src/file2 text/src/file2.moved
 rm -f text/src/file1.copy
+ls -l text/src
 
-# Links
+# Link Validation
 ln text/src/file1 links/file1.hard
 ln -s ../text/src/file1 links/file1.soft
+ls -li text/src/file1 links/file1.hard links/file1.soft
 ```
-* **Purpose:** Validates standard file lifecycle and link/inode behavior.
-* **Validation:** `ls -li text/src/file1 links/file1.hard` (Must share same Inode).
 
-### 5. Archiving & Compression
+### 5. Text Editing Workflow
+Use `vi text/notes.txt` to save the following content:
+```text
+F03 workspace on srv-admin
+shell, files, local docs completed
+links and archives validated
+```
+Then verify: `cat text/notes.txt`
+
+### 6. Archiving & Compression
 ```bash
 tar -cvf archive/text-src.tar text/src
 gzip -k archive/text-src.tar
 bzip2 -k archive/text-src.tar
-tar -xzf archive/text-src.tar.gz -C archive/tmp/ # Test extraction
+mkdir -p tmp/extract-gz tmp/extract-bz2
+tar -xzf archive/text-src.tar.gz -C tmp/extract-gz
+tar -xjf archive/text-src.tar.bz2 -C tmp/extract-bz2
+find archive -maxdepth 1 -type f | sort
+find tmp -maxdepth 3 -type f | sort
 ```
-* **Purpose:** Validates packaging and different compression algorithms.
 
-### 6. Local Documentation Lookup
+### 7. Local Documentation Lookup
 ```bash
+ls --help | head
 man ls | head -n 20
 man -k tar
+info tar | head -n 20 || true
+ls /usr/share/doc | head
 rpm -qd gzip | head
 ```
-* **Purpose:** Confirms access to internal system help and manual pages.
+
+### 8. Post-Reboot Persistence Validation
+Perform a system reboot to ensure the workspace is persistent:
+```bash
+sudo systemctl reboot
+```
+After logging back in:
+```bash
+hostnamectl --static
+find ~/lab/f03-shell-files-docs -maxdepth 3 -type f | sort
+ls -li ~/lab/f03-shell-files-docs/text/src/file1 \
+      ~/lab/f03-shell-files-docs/links/file1.hard \
+      ~/lab/f03-shell-files-docs/links/file1.soft
+```
 
 ---
 
@@ -127,10 +146,15 @@ mkdir -p ~/lab/f03-shell-files-docs/{text,archive,links,streams}
 cd ~/lab/f03-shell-files-docs
 hostnamectl --static > streams/hostname.txt
 printf "node=%s\nphase=F03\n" "$(hostnamectl --static)" > text/node.txt
+cp text/node.txt text/node.copy
+mv text/node.copy text/node.moved
 ln text/node.txt links/node.hard
 ln -s ../text/node.txt links/node.soft
 tar -cvf archive/node.tar text && gzip -k archive/node.tar
+man hostnamectl | head -n 15
+cat text/node.txt
 find ~/lab/f03-shell-files-docs -maxdepth 3 -type f | sort
+ls -li text/node.txt links/node.hard links/node.soft
 ```
 
 ---
@@ -138,24 +162,18 @@ find ~/lab/f03-shell-files-docs -maxdepth 3 -type f | sort
 ## 🧪 Validation Checklist
 
 ### **srv-admin (Detailed)**
-- [ ] Workspace structure confirmed (`find`).
 - [ ] `streams/error.log` captured a 2> redirection.
-- [ ] `text/regex-hit.txt` contains filtered data.
+- [ ] `text/regex-hit.txt` contains filtered data (no "beta").
+- [ ] `text/notes.txt` created and content verified.
 - [ ] Hard link shares the same Inode as source.
-- [ ] Archive `text-src.tar.gz` is valid and readable.
+- [ ] `text-src.tar.gz` and `text-src.tar.bz2` created and extracted.
 - [ ] **Post-Reboot:** Workspace persists after `sudo reboot`.
 
 ### **Secondary Guests**
 - [ ] `node.txt` reflects the correct hostname.
-- [ ] Soft link is functional (not broken).
+- [ ] `node.moved` exists in `text/`.
+- [ ] Hard link shares Inode with `node.txt`.
 - [ ] Tarball `node.tar.gz` exists in `archive/`.
-
----
-
-## 🧯 Troubleshooting
-* **Broken Symlink:** If `links/file1.soft` is red/blinking, the relative path `../text/src/file1` is incorrect. Re-link from the `links/` directory.
-* **Man pages missing:** RHEL 10.1 minimal might lack some pages. Use `dnf install man-pages` if required, or fallback to `<command> --help`.
-* **Redirection failed:** Ensure you have write permissions in the `streams/` directory.
 
 ---
 
@@ -167,17 +185,17 @@ Store evidence in `assets/screenshots/phase-03/`:
 | **P03-01** | Local documentation lookup | `srv-admin` |
 | **P03-02** | Redirection and error logging | `srv-admin` |
 | **P03-03** | Grep and Regex results | `srv-admin` |
-| **P03-04** | File operations and Link Inodes | `srv-admin` |
+| **P03-04** | File operations | `srv-admin` |
+| **P03-04b** | Hard link and symlink validation | `srv-admin` |
 | **P03-05** | Archive and Compression results | `srv-admin` |
+| **P03-06** | Edited text validation | `srv-admin` |
 | **P03-07** | Final workspace tree | `srv-admin` |
-| **P03-08..10** | Final workspace (Short pattern) | `srv-web/db/storage` |
+| **P03-08** | Final replicated workspace | `srv-web` |
+| **P03-09** | Final replicated workspace | `srv-db` |
+| **P03-10** | Final replicated workspace | `srv-storage` |
 | **P03-11** | Post-reboot persistence | `srv-admin` |
 
 ---
 
 ## 🏁 Outcome
-Successful execution leaves:
-1.  A validated **Phase 03 workspace** on all guests.
-2.  Evidence of mastery over shell redirection, regex, and file handling.
-3.  Confirmation of system persistence and documentation lookup capability.
-
+Successful execution leaves a validated Phase 03 workspace on all guests, with documented evidence of shell redirection, text processing, file handling, archiving, link validation, and local documentation lookup.
