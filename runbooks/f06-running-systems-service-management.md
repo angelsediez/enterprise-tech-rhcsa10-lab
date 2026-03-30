@@ -1,7 +1,7 @@
 # 🛠️ Phase 06 Runbook: Running Systems and Service Management
 
 ## 🎯 Objective
-Execute and validate a practical Phase 06 workflow focused on the core operational management of RHEL 10.1. This runbook establishes a baseline for inspecting running processes, managing `systemd` units, analyzing logs with `journalctl`, and implementing controlled custom services.
+Execute and validate a practical Phase 06 workflow focused on running service inspection, `systemd` unit management, log inspection with `journalctl`, and controlled custom service validation across the guest set.
 
 This runbook uses `srv-admin` as the **full reference workflow** and then applies a **shorter validation pattern** to `srv-web`, `srv-db`, and `srv-storage`.
 
@@ -10,7 +10,7 @@ This runbook uses `srv-admin` as the **full reference workflow** and then applie
 ## 🔍 Scope
 
 ### **Included**
-* **Service Inspection:** Guest-side analysis of active and loaded services.
+* **Service Inspection:** Guest-side analysis of active and running services.
 * **State Validation:** `systemctl` checks for status, activity, and boot-time enablement.
 * **Evidence Persistence:** Capturing service metadata into the Phase 06 workspace.
 * **Log Analysis:** `journalctl` inspection for unit-specific and boot-level logs.
@@ -28,6 +28,7 @@ This runbook uses `srv-admin` as the **full reference workflow** and then applie
 ## 💻 Prerequisites
 
 Before using this runbook, confirm:
+
 | Requirement | Expected State | Verification |
 | :--- | :--- | :--- |
 | **Phase Baseline** | Phase 05 complete | Review `phases/05-software-and-scripting/README.md` |
@@ -40,6 +41,7 @@ Before using this runbook, confirm:
 ## 📍 Primary Workspace
 
 All work in this phase is performed under:
+
 `~/lab/f06-running-systems-service-management`
 
 **Expected Structure:**
@@ -48,7 +50,7 @@ All work in this phase is performed under:
 ├── services/    # Service status and activity evidence
 ├── systemd/     # Custom unit files and execution scripts
 ├── logs/        # Journal and service log exports
-└── tmp/         # Temporary testing logs
+└── tmp/         # Temporary testing area
 ```
 
 ---
@@ -59,8 +61,10 @@ All work in this phase is performed under:
 ```bash
 mkdir -p ~/lab/f06-running-systems-service-management/{services,systemd,logs,tmp}
 cd ~/lab/f06-running-systems-service-management
-pwd && whoami && hostnamectl --static
-find ~/lab/f06-running-systems-service-management -maxdepth 1 -type d | sort
+pwd
+whoami
+hostnamectl --static
+find ~/lab/f06-running-systems-service-management -maxdepth 2 -type d | sort
 ```
 
 ### 2) Running Service Baseline
@@ -90,7 +94,7 @@ journalctl -b --no-pager | tail -n 30
 ```bash
 cat > systemd/phase06-demo.sh <<'EOF'
 #!/usr/bin/env bash
-echo "phase06-demo execution at $(date)" >> /tmp/phase06-demo.log
+echo "phase06-demo $(date)" >> /tmp/phase06-demo.log
 EOF
 
 chmod 750 systemd/phase06-demo.sh
@@ -103,7 +107,6 @@ sudo chmod 755 /usr/local/bin/phase06-demo.sh
 cat > systemd/phase06-demo.service <<'EOF'
 [Unit]
 Description=Phase 06 Demo Service
-After=network.target
 
 [Service]
 Type=oneshot
@@ -119,24 +122,25 @@ EOF
 ```bash
 sudo cp systemd/phase06-demo.service /etc/systemd/system/phase06-demo.service
 sudo systemctl daemon-reload
-sudo systemctl enable --now phase06-demo.service
-systemctl status phase06-demo.service --no-pager -l
+sudo systemctl start phase06-demo.service
+sudo systemctl enable phase06-demo.service
+sudo systemctl status phase06-demo.service --no-pager -l
 systemctl is-active phase06-demo.service
 systemctl is-enabled phase06-demo.service
-cat /tmp/phase06-demo.log
 ```
 
 ### 8) Final Phase 06 Validation
 ```bash
+cat /tmp/phase06-demo.log
 find ~/lab/f06-running-systems-service-management -maxdepth 3 -type f | sort
 ls -l systemd/
 cat services/sshd-active.txt
+cat services/sshd-enabled.txt
 ```
 
 ---
 
 ## 🔁 Short Validation Pattern (srv-web, srv-db, srv-storage)
-
 Run this block on each guest:
 ```bash
 mkdir -p ~/lab/f06-running-systems-service-management/{services,systemd,logs}
@@ -146,6 +150,9 @@ systemctl is-active sshd > services/sshd-active.txt
 systemctl is-enabled sshd > services/sshd-enabled.txt
 journalctl -u sshd --no-pager | tail -n 20 > logs/sshd-journal-tail.txt
 find ~/lab/f06-running-systems-service-management -maxdepth 3 -type f | sort
+cat services/sshd-active.txt
+cat services/sshd-enabled.txt
+cat logs/sshd-journal-tail.txt | tail -n 10
 ```
 
 ---
@@ -153,26 +160,35 @@ find ~/lab/f06-running-systems-service-management -maxdepth 3 -type f | sort
 ## 🧪 Validation Targets
 
 ### **srv-admin**
-- [ ] Workspace tree confirmed via `find`.
-- [ ] `services/running-services.txt` contains valid unit listing.
-- [ ] `sshd` status, activity, and enablement captured.
-- [ ] Custom script `/usr/local/bin/phase06-demo.sh` exists and is executable.
-- [ ] Custom unit `/etc/systemd/system/phase06-demo.service` is loaded and active.
-- [ ] `/tmp/phase06-demo.log` confirms service execution.
+- [x] Workspace tree confirmed via `find`.
+- [x] `services/running-services.txt` contains valid unit listing.
+- [x] `sshd` status, activity, and enablement captured.
+- [x] `journalctl` evidence captured for `sshd` and current boot.
+- [x] Custom script `/usr/local/bin/phase06-demo.sh` exists and is executable.
+- [x] Custom unit `/etc/systemd/system/phase06-demo.service` is loaded successfully.
+- [x] Custom service is active.
+- [x] Custom service is enabled.
+- [x] `/tmp/phase06-demo.log` confirms service execution.
+- [x] Final workspace validation completed.
 
 ### **Secondary Guests**
-- [ ] Workspace and `services/` subfolder exist.
-- [ ] `sshd-active.txt` and `sshd-enabled.txt` contain valid states.
-- [ ] `sshd-journal-tail.txt` contains recent SSH log entries.
-- [ ] Final recursive listing reflects the completed validation pattern.
+- [x] Workspace and `services/` subfolder exist.
+- [x] `sshd-status.txt` created successfully.
+- [x] `sshd-active.txt` contains a valid state.
+- [x] `sshd-enabled.txt` contains a valid state.
+- [x] `sshd-journal-tail.txt` contains recent SSH log entries.
+- [x] Final recursive listing reflects the completed validation pattern on `srv-web`.
+- [x] Final recursive listing reflects the completed validation pattern on `srv-db`.
+- [x] Final recursive listing reflects the completed validation pattern on `srv-storage`.
 
 ---
 
 ## 🧯 Short Troubleshooting
 
-1. **`systemctl daemon-reload`:** Always run this after modifying or adding files to `/etc/systemd/system/`.
-2. **`Type=oneshot`:** The demo service will finish after running the script. This is normal; use `RemainAfterExit=yes` so the status appears as `active (exited)`.
-3. **Journal Empty:** If `journalctl` shows no data, check that the service has had recent activity or remove the `-u` filter to view the general system log.
+1. **`systemctl daemon-reload`**: Always run this after modifying or adding files to `/etc/systemd/system/`.
+2. **`Type=oneshot` behavior**: The demo service finishes after running the script. This is normal. `RemainAfterExit=yes` keeps the unit visible as `active (exited)` for validation.
+3. **Service does not enable**: Confirm the unit contains the `[Install]` section with `WantedBy=multi-user.target`.
+4. **Journal output looks empty**: Check whether the service had recent activity. If needed, re-run the unit or inspect the broader boot log with `journalctl -b --no-pager | tail -n 30`.
 
 ---
 
@@ -191,4 +207,6 @@ Store screenshots in: `assets/screenshots/phase-06/`
 ---
 
 ## 🏁 Outcome
-The successful completion of this runbook ensures a validated Phase 06 workspace across all nodes, with evidence of service inspection, `systemd` management, and log control. The lab is now prepared for **Phase 07: Local Storage and Filesystems**.
+Successful completion of this runbook leaves a validated Phase 06 workspace across all guests, with evidence of running service inspection, `systemd` state validation, journal review, and controlled custom service lifecycle management. 
+
+The lab is now prepared for **Phase 07 — Local Storage and Filesystems**.
