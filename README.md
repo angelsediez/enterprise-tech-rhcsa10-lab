@@ -25,6 +25,8 @@ Phase 03 established a validated shell, files, and local documentation workspace
 
 Phase 04 established a validated identity, SSH, and permissions baseline across all four guests, preparing the lab for the next software and scripting phase.
 
+Phase 05 established a validated software inspection and scripting baseline across all four guests, preparing the lab for the next running systems and service management phase.
+
 ---
 
 ## 🏗️ Lab Nodes
@@ -99,7 +101,7 @@ enterprise-tech-rhel10-lab/
 - [x] **Phase 02** — Four-node RHEL 10.1 guest deployment baseline ✅
 - [x] **Phase 03** — Shell, files, and local documentation baseline ✅
 - [x] **Phase 04** — Identity, SSH, and permissions baseline ✅
-- [ ] **Phase 05** — Software and scripting ⚪
+- [x] **Phase 05** — Software and scripting baseline ✅
 - [ ] **Phase 06** — Running systems and service management ⚪
 - [ ] **Phase 07** — Local storage and filesystems ⚪
 - [ ] **Phase 08** — Networking and firewall ⚪
@@ -139,6 +141,13 @@ enterprise-tech-rhel10-lab/
 **Replicated permissions workspace validated on secondary guests**
 ![Phase 04 Replicated Workspace](assets/screenshots/phase-04/P04-08-final-workspace-srv-storage.png)
 
+### 📦 Software and Scripting (Phase 05)
+**srv-admin software and scripting baseline**
+![Phase 05 Software Scripting](assets/screenshots/phase-05/P05-03-script-execution-srv-admin.png)
+
+**Replicated software/scripting workspace validated on secondary guests**
+![Phase 05 Replicated Workspace](assets/screenshots/phase-05/P05-07-final-workspace-srv-storage.png)
+
 ---
 
 ## ✅ Active Development
@@ -146,8 +155,8 @@ enterprise-tech-rhel10-lab/
 > [!IMPORTANT]
 > **Status:** Active Development  
 > **Validated Guests:** `srv-admin`, `srv-web`, `srv-db`, `srv-storage`  
-> **Current Baseline:** Four-node RHEL 10.1 deployment + Phase 03 shell/files/docs baseline + Phase 04 identity/SSH/permissions baseline complete  
-> **Next Milestone:** Phase 05 — Software and scripting
+> **Current Baseline:** Four-node RHEL 10.1 deployment + Phase 03 shell/files/docs baseline + Phase 04 identity/SSH/permissions baseline + Phase 05 software/scripting baseline complete  
+> **Next Milestone:** Phase 06 — Running systems and service management
 
 ---
 
@@ -187,6 +196,15 @@ Phase 04 added a validated identity, SSH, and permissions baseline across all fo
 - numeric permission validation with `chmod`
 - replicated identity and permissions workspace validation on `srv-web`, `srv-db`, and `srv-storage`
 
+Phase 05 added a validated software and scripting baseline across all four guests:
+- installed package inspection with `rpm -q`
+- repository state capture with `dnf repolist`
+- persistent software evidence stored in workspace files
+- Bash script creation with proper shebangs
+- executable permission validation with `chmod`
+- script output capture into persistent log files
+- replicated software/scripting workspace validation on `srv-web`, `srv-db`, and `srv-storage`
+
 ---
 
 ## 🧠 Design Philosophy
@@ -202,13 +220,16 @@ This project is built as a hands-on Linux systems lab emphasizing:
 * `runbooks/rhel10-install.md` — Main guest installation guide.
 * `runbooks/f03-shell-files-docs.md` — Phase 03 operational runbook.
 * `runbooks/f04-identity-ssh-permissions.md` — Phase 04 operational runbook.
+* `runbooks/f05-software-and-scripting.md` — Phase 05 operational runbook.
 * `runbooks/kvm-libvirt-host-setup.md` — Phase 01 virtualization host setup and validation.
 * `notes/guest-inventory.md` — Current state of all lab VMs.
+* `phases/05-software-and-scripting/README.md` — Detailed Phase 05 software/scripting report.
 * `phases/04-identity-ssh-permissions/README.md` — Detailed Phase 04 identity/SSH/permissions report.
 * `phases/03-shell-files-docs/README.md` — Detailed Phase 03 shell/files/docs report.
 * `phases/02-rhel10-install/README.md` — Detailed Phase 02 deployment report.
 * `phases/01-virtualization-host/README.md` — Host preparation and validation record.
 * `phases/01-virtualization-host/lab-int.xml` — Internal libvirt network definition.
+* `validation/05-software-and-scripting-checklist.md` — Phase 05 validation checklist.
 * `validation/04-identity-ssh-permissions-checklist.md` — Phase 04 validation checklist.
 * `validation/03-shell-files-docs-checklist.md` — Phase 03 validation checklist.
 * `docs/architecture.md` — High-level lab design.
