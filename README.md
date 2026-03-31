@@ -29,6 +29,8 @@ Phase 05 established a validated software inspection and scripting baseline acro
 
 Phase 06 established a validated running systems and service management baseline across all four guests, preparing the lab for the next local storage and filesystems phase.
 
+Phase 07 established a validated local storage and filesystem baseline across all four guests, preparing the lab for the next networking and firewall phase.
+
 ---
 
 ## 🏗️ Lab Nodes
@@ -97,7 +99,7 @@ enterprise-tech-rhel10-lab/
 - [x] **Phase 04** — Identity, SSH, and permissions baseline ✅
 - [x] **Phase 05** — Software and scripting baseline ✅
 - [x] **Phase 06** — Running systems and service management baseline ✅
-- [ ] **Phase 07** — Local storage and filesystems ⚪
+- [x] **Phase 07** — Local storage and filesystems baseline ✅
 - [ ] **Phase 08** — Networking and firewall ⚪
 - [ ] **Phase 09** — NFS and autofs ⚪
 - [ ] **Phase 10** — SELinux and troubleshooting ⚪
@@ -149,6 +151,13 @@ enterprise-tech-rhel10-lab/
 **Replicated service-management workspace validated on secondary guests**
 ![Phase 06 Replicated Workspace](assets/screenshots/phase-06/P06-08-final-workspace-srv-storage.png)
 
+### 💾 Local Storage and Filesystems (Phase 07)
+**srv-admin local storage and filesystem baseline**
+![Phase 07 Storage Filesystems](assets/screenshots/phase-07/P07-05-persistent-mount-validation-srv-admin.png)
+
+**Replicated storage workspace validated on secondary guests**
+![Phase 07 Replicated Workspace](assets/screenshots/phase-07/P07-08-final-workspace-srv-storage.png)
+
 ---
 
 ## ✅ Active Development
@@ -156,15 +165,18 @@ enterprise-tech-rhel10-lab/
 > [!IMPORTANT]
 > **Status:** Active Development  
 > **Validated Guests:** `srv-admin`, `srv-web`, `srv-db`, `srv-storage`  
-> **Current Baseline:** Four-node RHEL 10.1 deployment + Phase 03 baseline + Phase 04 baseline + Phase 05 baseline + Phase 06 service-management baseline complete  
-> **Next Milestone:** Phase 07 — Local Storage and Filesystems
+> **Current Baseline:** Four-node RHEL 10.1 deployment + Phase 03 baseline + Phase 04 baseline + Phase 05 baseline + Phase 06 baseline + Phase 07 storage/filesystems baseline complete  
+> **Next Milestone:** Phase 08 — Networking and Firewall
 
 ---
 
 ## 🧪 Current Lab Baseline Summary
 
 Phase 02 produced a validated four-node RHEL 10.1 guest set:
-- `srv-admin`, `srv-web`, `srv-db`, `srv-storage`
+- Deployment of `srv-admin`, `srv-web`, `srv-db`, and `srv-storage`.
+- Baseline configuration: UEFI/OVMF, 2 vCPU, 4GB RAM, 60GB Disk.
+- Internal networking (`lab-int`) and storage pool (`enterprise-tech-images`) validation.
+- Automated guest autostart and host-side libvirt validation completed.
 
 Phase 03 added a validated shell/files/docs workspace baseline across all four guests:
 - shell navigation and working context validation
@@ -201,6 +213,16 @@ Phase 06 added a validated running systems and service management baseline acros
 - controlled custom `systemd` service creation and validation on `srv-admin`
 - replicated `sshd` service-management workspace validation on `srv-web`, `srv-db`, and `srv-storage`
 
+Phase 07 added a validated local storage and filesystem baseline across all four guests:
+- block device inspection with `lsblk` and `fdisk`
+- filesystem identification with `blkid`
+- mount-state inspection with `df -hT` and `mount`
+- dedicated lab disk preparation on `srv-admin` using `vdb` and `vdb1`
+- controlled XFS filesystem creation on the lab partition
+- temporary mount validation on `/mnt/phase07-demo`
+- persistent mount validation through `/etc/fstab`
+- replicated storage inspection workspace validation on `srv-web`, `srv-db`, and `srv-storage`
+
 ---
 
 ## 🧠 Design Philosophy
@@ -218,14 +240,17 @@ This project is built as a hands-on Linux systems lab emphasizing:
 * `runbooks/f04-identity-ssh-permissions.md` — Phase 04 operational runbook.
 * `runbooks/f05-software-and-scripting.md` — Phase 05 operational runbook.
 * `runbooks/f06-running-systems-service-management.md` — Phase 06 operational runbook.
+* `runbooks/f07-local-storage-filesystems.md` — Phase 07 operational runbook.
 * `runbooks/kvm-libvirt-host-setup.md` — Phase 01 virtualization host setup and validation.
 * `notes/guest-inventory.md` — Current state of all lab VMs.
-* `phases/06-running-systems-service-management/README.md` — Detailed Phase 06 running systems and service management report.
-* `phases/05-software-and-scripting/README.md` — Detailed Phase 05 software/scripting report.
-* `phases/04-identity-ssh-permissions/README.md` — Detailed Phase 04 identity/SSH/permissions report.
-* `phases/03-shell-files-docs/README.md` — Detailed Phase 03 shell/files/docs report.
+* `phases/07-local-storage-filesystems/README.md` — Detailed Phase 07 local storage and filesystems report.
+* `phases/06-running-systems-service-management/README.md` — Detailed Phase 06 report.
+* `phases/05-software-and-scripting/README.md` — Detailed Phase 05 report.
+* `phases/04-identity-ssh-permissions/README.md` — Detailed Phase 04 report.
+* `phases/03-shell-files-docs/README.md` — Detailed Phase 03 report.
 * `phases/02-rhel10-install/README.md` — Detailed Phase 02 deployment report.
 * `phases/01-virtualization-host/README.md` — Host preparation and validation record.
+* `validation/07-local-storage-filesystems-checklist.md` — Phase 07 validation checklist.
 * `validation/06-running-systems-service-management-checklist.md` — Phase 06 validation checklist.
 * `validation/05-software-and-scripting-checklist.md` — Phase 05 validation checklist.
 * `validation/04-identity-ssh-permissions-checklist.md` — Phase 04 validation checklist.
