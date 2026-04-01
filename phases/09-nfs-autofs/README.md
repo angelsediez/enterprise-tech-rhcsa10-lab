@@ -1,29 +1,30 @@
-# 📂 Phase 09 - NFS and Autofs
+# 📂 Phase 09 - NFS and autofs
 
 ## 🎯 Objective
-Establish and validate a controlled Phase 09 baseline for shared storage using **Network File System (NFS)** and **Autofs**.
+Establish and validate a controlled Phase 09 baseline for shared storage access using NFS and automatic mount behavior with `autofs` across the guest set.
 
-This phase focuses on configuring `srv-storage` as a central NFS server, exporting controlled directories, and managing on-demand mounting on client nodes (`srv-admin`, `srv-web`, `srv-db`) via `autofs`. This ensures efficient resource sharing and automated mount lifecycle management.
+This phase focused on configuring `srv-storage` as the reference NFS server, exporting a controlled shared directory, validating manual client-side NFS mounts, and confirming on-demand automount behavior through `autofs` on the client nodes.
 
-This phase begins with the **server-side configuration on `srv-storage`** and follows with a **replicated validation pattern** across the client set.
+This phase used **`srv-storage` as the full reference workflow** and applied a **client validation pattern** to `srv-admin`, `srv-web`, and `srv-db`.
 
 ---
 
 ## 🔍 Scope
 
 ### **Included in this phase:**
-* **NFS Server Baseline:** Installation and service hardening of `nfs-utils` on `srv-storage`.
-* **Export Management:** Configuration of `/etc/exports` with controlled sync and permission parameters.
-* **Firewall Awareness:** Opening necessary RPC and NFS ports on the server side.
-* **NFS Client Access:** Manual mount validation and permission testing from client nodes.
-* **Autofs Implementation:** Automating mounts via master and direct/indirect maps.
-* **Evidence:** Capturing export visibility (`showmount`), mount states, and service logs.
+* **NFS Server Baseline:** Installation and validation of `nfs-utils` on `srv-storage`.
+* **Export Management:** Controlled NFS export configuration for the internal lab network.
+* **Firewall Awareness:** Validation of NFS-related firewall services and listeners.
+* **Client Validation:** Manual NFS access checks from `srv-admin`, `srv-web`, and `srv-db`.
+* **autofs Workflow:** Configuration and validation of automatic NFS mounts on client nodes.
+* **Evidence:** Capturing screenshots, export visibility, mount states, and workspace evidence.
 
 ### **Excluded (Later Phases):**
-* NFS Kerberos authentication (RPCSEC_GSS).
-* Complex multi-pathing for storage.
-* High Availability (HA) NFS clusters.
-* Quota management for shared storage.
+* Kerberos-secured NFS.
+* Advanced export permission models.
+* CIFS/SMB shares.
+* High-availability storage clustering.
+* Storage quota management.
 
 ---
 
@@ -31,34 +32,34 @@ This phase begins with the **server-side configuration on `srv-storage`** and fo
 
 | Component | Details |
 | :--- | :--- |
-| **Phase Focus** | NFS Server and Autofs Clients |
-| **Primary Server** | `srv-storage` (Reference NFS Server) |
-| **Primary Clients** | `srv-admin`, `srv-web`, `srv-db` |
+| **Phase Focus** | NFS and autofs |
+| **Primary Guest** | `srv-storage` (Reference NFS Server) |
+| **Client Guests** | `srv-admin`, `srv-web`, `srv-db` |
 | **Guest Platform** | Red Hat Enterprise Linux 10.1 |
 | **Workspace Root** | `~/lab/f09-nfs-autofs` |
-| **Status** | ⚪ Not Started |
+| **Status** | ✅ Complete |
 
 ---
 
 ## 🛠️ Execution Strategy
-The phase follows a **Server & Clients** model:
+The phase followed a **Server & Clients** model:
 
-1.  **Reference Workflow on `srv-storage`:** Configure and validate the NFS server role (services, exports, and firewall).
-2.  **Export Validation:** Confirm export visibility and correctness from the server side using `exportfs`.
-3.  **Client Validation Pattern:** Mount and validate manual access from `srv-admin`, `srv-web`, and `srv-db`.
-4.  **Autofs Validation:** Implement and confirm on-demand mount behavior from client nodes.
-5.  **Closure:** Confirm that the validated Phase 09 shared-storage baseline exists across the lab.
+1. **Reference Workflow on `srv-storage`:** Install and validate the NFS server role.
+2. **Export Validation:** Confirm export visibility and correctness from the server side.
+3. **Client Validation Pattern:** Validate manual NFS access from `srv-admin`, `srv-web`, and `srv-db`.
+4. **autofs Validation:** Confirm on-demand mount behavior from the client nodes.
+5. **Closure:** Confirm that the validated Phase 09 shared-storage baseline exists across the lab.
 
 ---
 
 ## 📐 Workspace Design
-Phase 09 operations are isolated within a dedicated directory structure:
+Phase 09 operations were isolated within a dedicated directory structure:
 
 ```text
 ~/lab/f09-nfs-autofs/
-├── server/       # Export and NFS server evidence (srv-storage)
+├── server/       # Export and NFS server evidence
 ├── clients/      # Client-side mount and access evidence
-├── autofs/       # Autofs map and validation evidence
+├── autofs/       # autofs map and validation evidence
 └── tmp/          # Temporary testing area
 ```
 
@@ -69,88 +70,119 @@ Phase 09 operations are isolated within a dedicated directory structure:
 ### **Guest Status**
 | Guest | Role | Status |
 | :--- | :--- | :--- |
-| `srv-storage` | Reference NFS Server | ⚪ Pending |
-| `srv-admin` | Client Node | ⚪ Pending |
-| `srv-web` | Client Node | ⚪ Pending |
-| `srv-db` | Client Node | ⚪ Pending |
+| `srv-storage` | Reference NFS Server | ✅ Complete |
+| `srv-admin` | Client Node | ✅ Complete |
+| `srv-web` | Client Node | ✅ Complete |
+| `srv-db` | Client Node | ✅ Complete |
 
-### **Phase 09 Planned Milestones**
-* [ ] Phase 09 workspace created on `srv-storage`.
-* [ ] NFS server baseline (`nfs-utils`) validated on `srv-storage`.
-* [ ] Controlled `/etc/exports` configuration created and validated.
-* [ ] Firewall rules for NFS/RPC services applied and verified.
-* [ ] Client-side NFS manual access validated on all client nodes.
-* [ ] `autofs` maps configured and validated (on-demand mounting).
-* [ ] Screenshot evidence captured for all planned validation points.
+### **Phase 09 Completed Milestones**
+* [x] Phase 09 workspace created on `srv-storage`.
+* [x] NFS server baseline (`nfs-utils`) validated on `srv-storage`.
+* [x] Controlled NFS export created and validated.
+* [x] Firewall rules for NFS-related services applied and verified.
+* [x] Client-side manual NFS access validated on `srv-admin`.
+* [x] `autofs` configured and validated on `srv-admin`.
+* [x] Replicated client validation completed on `srv-web` and `srv-db`.
+* [x] Screenshot evidence captured for all planned validation points.
 
 ---
 
-## 🧪 Planned srv-storage Validation Areas
+## 🧪 Completed srv-storage Validation Areas
 
 ### 1. NFS Server Baseline
+The reference server validated:
 ```bash
 rpm -q nfs-utils
+systemctl status rpcbind --no-pager -l
 systemctl status nfs-server --no-pager -l
 systemctl is-enabled nfs-server
 systemctl is-active nfs-server
 ```
 
 ### 2. Export Configuration
+A controlled export was created for the internal lab subnet:
 ```bash
-cat /etc/exports
+cat /etc/exports.d/phase09.exports
 sudo exportfs -rav
-exportfs -v
+sudo exportfs -v
 showmount -e localhost
 ```
 
+Validated export:
+`/srv/nfs/phase09-share 192.168.150.0/24(rw,sync,no_subtree_check)`
+
 ### 3. Service and Firewall Validation
+The server validated NFS-related firewall services and listeners:
 ```bash
-systemctl status rpcbind --no-pager -l
-firewall-cmd --list-services
+sudo firewall-cmd --list-services
 ss -tulpn | grep -E '2049|111'
 ```
 
 ---
 
-## 🧪 Planned Client Validation Areas
+## 🧪 Completed Client Validation Areas
 
-### 1. NFS Client Access
+### 1. Manual NFS Client Access
+Client-side validation was completed against the NFS server IP:
+* **NFS server:** 192.168.150.115
+* **Export path:** /srv/nfs/phase09-share
+
+Validated workflow:
 ```bash
-showmount -e srv-storage
-sudo mount -t nfs srv-storage:/export/path /mnt/test-nfs
-ls -la /mnt/test-nfs
+showmount -e 192.168.150.115
+sudo mkdir -p /mnt/phase09-nfs
+sudo mount -t nfs 192.168.150.115:/srv/nfs/phase09-share /mnt/phase09-nfs
+ls -la /mnt/phase09-nfs
+cat /mnt/phase09-nfs/README.txt
+mount | grep phase09-nfs
 ```
 
-### 2. Autofs Validation
+### 2. autofs Validation
+On-demand mount behavior was validated using a direct map:
 ```bash
+cat /etc/auto.master.d/phase09.autofs
+cat /etc/auto.phase09
 systemctl status autofs --no-pager -l
-ls /mnt/auto-share
-mount | grep auto-share
+ls /mnt/phase09-auto
+cat /mnt/phase09-auto/README.txt
+mount | grep phase09-auto
 ```
+
+Validated automount target:
+`/mnt/phase09-auto`
+
+### 3. Replicated Client Validation
+The client validation pattern was successfully replicated on:
+* **srv-web**
+* **srv-db**
 
 ---
 
-## 📸 Planned Screenshot Inventory
-Evidence stored in `assets/screenshots/phase-09/`:
+## 📸 Screenshot Inventory
+Evidence stored in assets/screenshots/phase-09/:
 
 | ID | Description | Target |
 | :--- | :--- | :--- |
-| **P09-01** | NFS server baseline (Service/Status) | `srv-storage` |
+| **P09-01** | NFS server baseline | `srv-storage` |
 | **P09-02** | Export configuration and visibility | `srv-storage` |
 | **P09-03** | NFS service and firewall validation | `srv-storage` |
 | **P09-04** | Client manual mount validation | `srv-admin` |
-| **P09-05** | Autofs on-demand mount validation | `srv-admin` |
-| **P09-06** | Client validation workspace | `srv-web` |
-| **P09-07** | Client validation workspace | `srv-db` |
+| **P09-05** | autofs on-demand mount validation | `srv-admin` |
+| **P09-06** | Replicated client validation | `srv-web` |
+| **P09-07** | Replicated client validation | `srv-db` |
 
 ---
 
 ## 🔗 Related Files
-* `runbooks/f09-nfs-autofs.md` — Detailed step-by-step guide.
+* `runbooks/f09-nfs-autofs.md` — Detailed Phase 09 operational runbook.
 * `phases/08-networking-firewall/README.md` — Previous phase report.
 * `notes/guest-inventory.md` — Lab VM hardware and status tracker.
 
 ---
 
 ## 🏁 Current Outcome
-Phase 09 is **Not Started** ⚪.
+Phase 09 is complete ✅.
+The lab now has a validated shared-storage baseline built around:
+- A working NFS server on `srv-storage`.
+- A controlled export for the `192.168.150.0/24` lab network.
+- Validated manual NFS access and `autofs` on-demand mounts across all client nodes.
