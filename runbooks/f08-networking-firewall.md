@@ -7,7 +7,7 @@ Execute and validate a practical Phase 08 workflow focused on networking and fir
 - Interface and IPv4 address inspection.
 - Routing table and gateway visibility.
 - Hostname and DNS resolver verification.
-- Listener/Socket inspection (`ss`).
+- Listener/socket inspection with `ss`.
 - `firewalld` state, zone, and service validation.
 - Execution of a controlled, persistent firewall rule change.
 
@@ -26,16 +26,18 @@ This runbook uses `srv-admin` as the **full reference workflow** and applies a *
 * **Evidence Persistence:** Structured capture of network states into the Phase 08 workspace.
 
 ### **Excluded**
-* Advanced routing protocols (OSPF, BGP) or policy routing.
-* Link aggregation (Bonding/Teaming) or bridge configuration.
+* Advanced routing protocols or policy routing.
+* Link aggregation, bridge configuration, or guest-side virtual switching.
 * VPN or encrypted tunnel setup.
 * Public-facing service publishing or NAT rules.
+* Complex firewall redesign beyond the controlled Phase 08 scope.
 
 ---
 
 ## 💻 Prerequisites
 
 Before using this runbook, confirm:
+
 | Requirement | Expected State | Verification |
 | :--- | :--- | :--- |
 | **Phase Baseline** | Phase 07 complete | Review `phases/07-local-storage-filesystems/README.md` |
@@ -44,13 +46,14 @@ Before using this runbook, confirm:
 | **Firewall Service** | Active on all guests | `systemctl is-active firewalld` |
 
 > [!IMPORTANT]
-> This phase validates and documents the guest network baseline. Do **not** modify IP addressing or hostnames unless they deviate from your lab's static design. Keep all firewall changes controlled and documented.
+> This phase validates and documents the guest network baseline. Do **not** redesign addressing or hostname policy here. Keep all firewall changes controlled, small, and fully documented.
 
 ---
 
 ## 📍 Primary Workspace
 
 All work in this phase is performed under:
+
 `~/lab/f08-networking-firewall`
 
 **Expected Structure:**
@@ -59,7 +62,7 @@ All work in this phase is performed under:
 ├── network/     # Interface, address, and DNS logs
 ├── firewall/    # firewalld status, zones, and rule logs
 ├── validation/  # Connectivity and listener evidence
-└── tmp/          # Temporary testing area
+└── tmp/         # Temporary testing area
 ```
 
 ---
@@ -70,7 +73,9 @@ All work in this phase is performed under:
 ```bash
 mkdir -p ~/lab/f08-networking-firewall/{network,firewall,validation,tmp}
 cd ~/lab/f08-networking-firewall
-pwd && whoami && hostnamectl --static
+pwd
+whoami
+hostnamectl --static
 find ~/lab/f08-networking-firewall -maxdepth 2 -type d | sort
 ```
 
@@ -102,38 +107,34 @@ ping -c 2 192.168.150.1
 ### 5) Firewall Baseline
 ```bash
 systemctl status firewalld --no-pager -l
-firewall-cmd --state
-firewall-cmd --get-active-zones
-firewall-cmd --list-all
+sudo firewall-cmd --state
+sudo firewall-cmd --get-active-zones
+sudo firewall-cmd --list-all
 ```
 
 ### 6) Save Firewall Evidence
 ```bash
 systemctl status firewalld --no-pager -l > firewall/firewalld-status.txt
-firewall-cmd --state > firewall/firewalld-state.txt
-firewall-cmd --get-active-zones > firewall/active-zones.txt
-firewall-cmd --list-all > firewall/list-all.txt
+sudo firewall-cmd --state > firewall/firewalld-state.txt
+sudo firewall-cmd --get-active-zones > firewall/active-zones.txt
+sudo firewall-cmd --list-all > firewall/list-all.txt
+find firewall -maxdepth 1 -type f | sort
 ```
 
 ### 7) Controlled Firewall Validation
 ```bash
-# Add HTTP service to the runtime configuration
 sudo firewall-cmd --add-service=http
-firewall-cmd --list-services
-
-# Persist the change
+sudo firewall-cmd --list-services
 sudo firewall-cmd --runtime-to-permanent
 sudo firewall-cmd --reload
-
-# Verify persistence
-firewall-cmd --list-services
+sudo firewall-cmd --list-services
 ```
 
 ### 8) Save Validation Evidence
 ```bash
 ss -tulpn > validation/ss-tulpn.txt
 ping -c 2 192.168.150.1 > validation/ping-gateway.txt
-firewall-cmd --list-services > firewall/list-services-after-http.txt
+sudo firewall-cmd --list-services > firewall/list-services-after-http.txt
 find validation firewall -maxdepth 1 -type f | sort
 ```
 
@@ -141,60 +142,73 @@ find validation firewall -maxdepth 1 -type f | sort
 ```bash
 find ~/lab/f08-networking-firewall -maxdepth 3 -type f | sort
 cat firewall/firewalld-state.txt
+cat firewall/active-zones.txt
 cat firewall/list-services-after-http.txt
 ```
 
 ---
 
 ## 🔁 Short Validation Pattern (srv-web, srv-db, srv-storage)
+Run this block on each secondary guest to document the network and firewall state:
 
-Run this block on each secondary guest to document the network and security state:
 ```bash
 mkdir -p ~/lab/f08-networking-firewall/{network,firewall,validation}
 cd ~/lab/f08-networking-firewall
 ip -brief address > network/ip-brief-address.txt
 ip route > network/ip-route.txt
 nmcli device status > network/nmcli-device-status.txt
-firewall-cmd --state > firewall/firewalld-state.txt
-firewall-cmd --get-active-zones > firewall/active-zones.txt
-firewall-cmd --list-all > firewall/list-all.txt
+sudo firewall-cmd --state > firewall/firewalld-state.txt
+sudo firewall-cmd --get-active-zones > firewall/active-zones.txt
+sudo firewall-cmd --list-all > firewall/list-all.txt
 find ~/lab/f08-networking-firewall -maxdepth 3 -type f | sort
 cat network/ip-brief-address.txt
 cat firewall/firewalld-state.txt
+cat firewall/active-zones.txt
 ```
+
+> [!NOTE]
+> The secondary guests used the inspection-only validation pattern. The controlled firewall service addition was documented only on srv-admin as the reference workflow.
 
 ---
 
 ## 🧪 Validation Targets
 
 ### **srv-admin**
-- [ ] Workspace created successfully.
-- [ ] Interface, route, and hostname baseline inspected.
-- [ ] DNS resolver (`resolv.conf`) evidence captured.
-- [ ] Socket listener state (`ss`) captured.
-- [ ] Gateway connectivity (ICMP) verified.
-- [ ] `firewalld` service status and state validated.
-- [ ] Active zone mapping confirmed.
-- [ ] Controlled **HTTP** service rule added and persisted.
-- [ ] Firewall evidence files stored in the workspace.
-- [ ] Final workspace recursive validation completed.
+- [x] Workspace created successfully.
+- [x] Interface, route, and hostname baseline inspected.
+- [x] DNS resolver evidence captured.
+- [x] Listener state captured with `ss`.
+- [x] Gateway connectivity verified with `ping`.
+- [x] `firewalld` service status and state validated.
+- [x] Active zone mapping confirmed.
+- [x] Controlled `http` service rule added and persisted.
+- [x] Firewall evidence files stored in the workspace.
+- [x] Final workspace recursive validation completed.
 
 ### **Secondary Guests (srv-web, srv-db, srv-storage)**
-- [ ] Workspace created successfully.
-- [ ] `network/` and `firewall/` evidence files generated.
-- [ ] Interface and firewall states reviewed successfully.
-- [ ] Final workspace listing completed on **srv-web**.
-- [ ] Final workspace listing completed on **srv-db**.
-- [ ] Final workspace listing completed on **srv-storage**.
+- [x] Workspace created successfully.
+- [x] `network/` evidence files generated.
+- [x] `firewall/` evidence files generated.
+- [x] Interface and firewall states reviewed successfully.
+- [x] Final workspace listing completed on **srv-web**.
+- [x] Final workspace listing completed on **srv-db**.
+- [x] Final workspace listing completed on **srv-storage**.
 
 ---
 
 ## 🧯 Short Troubleshooting
 
-1.  **`firewall-cmd --state` fails:** Check if the service is active: `systemctl status firewalld`.
-2.  **`nmcli` output is empty:** Ensure the `NetworkManager` service is running.
-3.  **Ping fails:** Validate your `ip route` and ensure the gateway IP is correct.
-4.  **Runtime-to-Permanent fails:** Ensure the runtime change was successful first.
+1. **`firewall-cmd --state` fails**
+   Check if the service is active: `systemctl status firewalld --no-pager -l`. If necessary: `sudo systemctl start firewalld && sudo systemctl enable firewalld`.
+
+2. **`nmcli` output looks incomplete**
+   Ensure `NetworkManager` is active: `systemctl status NetworkManager --no-pager -l`.
+
+3. **Ping to the gateway fails**
+   Review the interface state and routes: `ip -brief address` and `ip route`.
+
+4. **`runtime-to-permanent` fails**
+   Confirm the runtime change succeeded first: `sudo firewall-cmd --state` and `sudo firewall-cmd --list-services`.
 
 ---
 
@@ -205,6 +219,7 @@ Store evidence in: `assets/screenshots/phase-08/`
 * `P08-02-routing-hostname-baseline-srv-admin.png`
 * `P08-03-firewalld-state-zones-srv-admin.png`
 * `P08-04-controlled-firewall-rule-srv-admin.png`
+* [Image of netstat command output showing active listeners]
 * `P08-05-listener-connectivity-srv-admin.png`
 * `P08-06-final-workspace-srv-web.png`
 * `P08-07-final-workspace-srv-db.png`
@@ -213,4 +228,6 @@ Store evidence in: `assets/screenshots/phase-08/`
 ---
 
 ## 🏁 Outcome
-Successful execution leaves a validated Phase 08 networking and firewall workspace across all nodes. The lab is now prepared for **Phase 09: NFS and Autofs**.
+Successful execution leaves a validated Phase 08 networking and firewall workspace across all nodes. The lab now has documented evidence of interface inspection, routing visibility, hostname and DNS verification, listener inspection, firewalld state validation, controlled firewall rule persistence, and replicated firewall-state validation on the secondary guests.
+
+The environment is now prepared for **Phase 09: NFS and Autofs**.
