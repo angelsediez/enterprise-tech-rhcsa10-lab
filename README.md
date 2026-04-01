@@ -19,74 +19,25 @@ This repository documents a **multi-VM Red Hat Enterprise Linux 10.1 homelab** d
 
 The lab is organized into **execution phases**, supported by professional runbooks, validation checklists, and technical evidence.
 
-Phase 02 established a validated four-node RHEL 10.1 baseline that will support the next infrastructure and service configuration phases.
-
-Phase 03 established a validated shell, files, and local documentation workspace across all four guests, creating a clean baseline for the next identity, SSH, and permissions phase.
-
-Phase 04 established a validated identity, SSH, and permissions baseline across all four guests, preparing the lab for the next software and scripting phase.
-
-Phase 05 established a validated software inspection and scripting baseline across all four guests, preparing the lab for the next running systems and service management phase.
-
-Phase 06 established a validated running systems and service management baseline across all four guests, preparing the lab for the next local storage and filesystems phase.
-
-Phase 07 established a validated local storage and filesystem baseline across all four guests, preparing the lab for the next networking and firewall phase.
+Phase 02 established a validated four-node RHEL 10.1 baseline.
+Phase 03 established a validated shell, files, and local documentation workspace.
+Phase 04 established a validated identity, SSH, and permissions baseline.
+Phase 05 established a validated software inspection and scripting baseline.
+Phase 06 established a validated running systems and service management baseline.
+Phase 07 established a validated local storage and filesystem baseline.
+Phase 08 established a validated networking and firewall baseline, preparing the lab for the next NFS and autofs phase.
 
 ---
 
 ## 🏗️ Lab Nodes
 The infrastructure consists of four core virtual machines:
 
-| Hostname | Role |
-| :--- | :--- |
-| `srv-admin` | Administration and management node |
-| `srv-web` | Web service node |
-| `srv-db` | Database service node |
-| `srv-storage` | Shared storage and NFS/autofs support node |
-
----
-
-## 🎯 What This Lab Covers
-This homelab focuses on practical, production-ready workflows:
-* 🖥️ **Provisioning:** Baseline configuration and reproducible deployments.
-* 📦 **Software:** Package management and internal repository usage.
-* 👤 **Identity:** SSH hardening, permissions, and user lifecycle.
-* 💾 **Storage:** Filesystems, LVM, and mount persistence.
-* ⚙️ **Systemd:** Service management and boot behavior.
-* 🌐 **Networking:** Hostname resolution and Firewalld policy.
-* 🔐 **Security:** SELinux-aware administration.
-* 📝 **Ops:** Logging, scheduling, and operational validation.
-* 🧰 **Recovery:** Reproducible troubleshooting workflows.
-
----
-
-## 🧱 Environment Context
-
-| Item | Value |
-| :--- | :--- |
-| **Guest Platform** | Red Hat Enterprise Linux 10.1 (`rhel10.1`) |
-| **Host Platform** | Fedora Linux 43 (KDE Plasma Desktop Edition) |
-| **Virtualization** | KVM + QEMU + libvirt + virt-manager |
-| **Storage Pool** | `enterprise-tech-images` |
-| **Internal Network** | `lab-int` |
-| **Lab Style** | Multi-VM local enterprise simulation |
-| **ISO Path** | `/var/lib/libvirt/boot/rhel-10.1-x86_64-dvd.iso` |
-
----
-
-## 🗺️ Project Structure
-
-```text
-enterprise-tech-rhel10-lab/
-├── README.md               # Main landing page
-├── assets/                 # Images, diagrams, and screenshots
-├── docs/                   # General design and architecture
-├── notes/                  # Host notes and technical references
-├── phases/                 # Execution documentation by phase
-├── runbooks/               # Step-by-step operational procedures
-├── scripts/                # Helper scripts for validation
-├── troubleshooting/        # Failure logs and recovery workflows
-└── validation/             # Verification steps and checklists
-```
+| Hostname | Role | Description |
+| :--- | :--- | :--- |
+| `srv-admin` | **Administration** | Management node and reference for full workflows. |
+| `srv-web` | **Web Service** | Application node for web service simulation. |
+| `srv-db` | **Database** | Backend node for structured data services. |
+| `srv-storage` | **Storage** | Shared storage and future NFS/autofs support node. |
 
 ---
 
@@ -100,7 +51,7 @@ enterprise-tech-rhel10-lab/
 - [x] **Phase 05** — Software and scripting baseline ✅
 - [x] **Phase 06** — Running systems and service management baseline ✅
 - [x] **Phase 07** — Local storage and filesystems baseline ✅
-- [ ] **Phase 08** — Networking and firewall ⚪
+- [x] **Phase 08** — Networking and firewall baseline ✅
 - [ ] **Phase 09** — NFS and autofs ⚪
 - [ ] **Phase 10** — SELinux and troubleshooting ⚪
 - [ ] **Phase 11** — Final integrated validation ⚪
@@ -109,54 +60,18 @@ enterprise-tech-rhel10-lab/
 
 ## 🖼️ Snapshot Gallery
 
-### 🖥️ Host Setup (Phase 01)
-**Fedora 43 host identity**
-![Host Identity](assets/screenshots/phase-01/P01-01-fedora43-host-release.png)
+### 🖥️ Host & Deployment (Phases 01-02)
+**Host Identity & RHEL 10.1 Anaconda Summary**
+![Deployment](assets/screenshots/phase-02/P02-26-anaconda-installation-summary-srv-storage.png)
 
-**KVM capability confirmed**
-![KVM Capability](assets/screenshots/phase-01/P01-02-kvm-capability-and-dev-kvm.png)
+### ⚙️ Services & Storage (Phases 06-07)
+**srv-admin custom services & persistent mounts**
+![Storage Baseline](assets/screenshots/phase-07/P07-05-persistent-mount-validation-srv-admin.png)
 
-### 🚀 Guest Deployment (Phase 02)
-**RHEL 10.1 deployment workflow**
-![Deployment Workflow](assets/screenshots/phase-02/P02-26-anaconda-installation-summary-srv-storage.png)
-
-**Final guest validated**
-![Final Guest Validated](assets/screenshots/phase-02/P02-29-srv-storage-host-side-validation.png)
-
-### 🐚 Shell, Files, and Local Documentation (Phase 03)
-**srv-admin local documentation and shell workflow**
-![Phase 03 Local Docs](assets/screenshots/phase-03/P03-01-local-docs-srv-admin.png)
-
-**Replicated workspace validated on secondary guests**
-![Phase 03 Replicated Workspace](assets/screenshots/phase-03/P03-10-final-workspace-srv-storage.png)
-
-### 🔐 Identity, SSH, and Permissions (Phase 04)
-**srv-admin identity and SSH baseline**
-![Phase 04 Identity SSH](assets/screenshots/phase-04/P04-03-ssh-baseline-srv-admin.png)
-
-**Replicated permissions workspace validated on secondary guests**
-![Phase 04 Replicated Workspace](assets/screenshots/phase-04/P04-08-final-workspace-srv-storage.png)
-
-### 📦 Software and Scripting (Phase 05)
-**srv-admin software and scripting baseline**
-![Phase 05 Software Scripting](assets/screenshots/phase-05/P05-03-script-execution-srv-admin.png)
-
-**Replicated software/scripting workspace validated on secondary guests**
-![Phase 05 Replicated Workspace](assets/screenshots/phase-05/P05-07-final-workspace-srv-storage.png)
-
-### ⚙️ Running Systems and Service Management (Phase 06)
-**srv-admin service management baseline**
-![Phase 06 Service Management](assets/screenshots/phase-06/P06-04-custom-service-status-srv-admin.png)
-
-**Replicated service-management workspace validated on secondary guests**
-![Phase 06 Replicated Workspace](assets/screenshots/phase-06/P06-08-final-workspace-srv-storage.png)
-
-### 💾 Local Storage and Filesystems (Phase 07)
-**srv-admin local storage and filesystem baseline**
-![Phase 07 Storage Filesystems](assets/screenshots/phase-07/P07-05-persistent-mount-validation-srv-admin.png)
-
-**Replicated storage workspace validated on secondary guests**
-![Phase 07 Replicated Workspace](assets/screenshots/phase-07/P07-08-final-workspace-srv-storage.png)
+### 🌐 Networking & Firewall (Phase 08)
+**srv-admin controlled firewall rule & node replication**
+![Firewall Rule](assets/screenshots/phase-08/P08-04-controlled-firewall-rule-srv-admin.png)
+![Replicated Workspace](assets/screenshots/phase-08/P08-08-final-workspace-srv-storage.png)
 
 ---
 
@@ -164,98 +79,41 @@ enterprise-tech-rhel10-lab/
 
 > [!IMPORTANT]
 > **Status:** Active Development  
-> **Validated Guests:** `srv-admin`, `srv-web`, `srv-db`, `srv-storage`  
-> **Current Baseline:** Four-node RHEL 10.1 deployment + Phase 03 baseline + Phase 04 baseline + Phase 05 baseline + Phase 06 baseline + Phase 07 storage/filesystems baseline complete  
-> **Next Milestone:** Phase 08 — Networking and Firewall
+> **Current Baseline:** RHEL 10.1 Deployment + All Phases up to Phase 08 Networking/Firewall Complete.  
+> **Next Milestone:** Phase 09 — NFS and Autofs
 
 ---
 
 ## 🧪 Current Lab Baseline Summary
 
-Phase 02 produced a validated four-node RHEL 10.1 guest set:
-- Deployment of `srv-admin`, `srv-web`, `srv-db`, and `srv-storage`.
-- Baseline configuration: UEFI/OVMF, 2 vCPU, 4GB RAM, 60GB Disk.
-- Internal networking (`lab-int`) and storage pool (`enterprise-tech-images`) validation.
-- Automated guest autostart and host-side libvirt validation completed.
-
-Phase 03 added a validated shell/files/docs workspace baseline across all four guests:
-- shell navigation and working context validation
-- stdout and stderr redirection into persistent files
-- grep and regex filtering workflows
-- file creation, copy, move, and removal
-- hard link and symbolic link validation
-- tar, gzip, and bzip2 archive handling
-- local documentation lookup with `man`, `--help`, and package docs
-- post-reboot persistence validated on `srv-admin`
-
-Phase 04 added a validated identity, SSH, and permissions baseline across all four guests:
-- local identity inspection and evidence capture
-- `sudo` access validation for the working user
-- SSH service baseline review and active configuration inspection
-- controlled ownership and group ownership testing
-- numeric permission validation with `chmod`
-- replicated identity and permissions workspace validation on secondary guests
-
-Phase 05 added a validated software and scripting baseline across all four guests:
-- installed package inspection with `rpm -q`
-- repository state capture with `dnf repolist`
-- persistent software evidence stored in workspace files
-- Bash script creation with proper shebangs
-- executable permission validation with `chmod`
-- script output capture into persistent log files
-- replicated software/scripting workspace validation on secondary guests
-
-Phase 06 added a validated running systems and service management baseline across all four guests:
-- running service inspection with `systemctl list-units --type=service --state=running`
-- `sshd` state validation with `status`, `is-active`, and `is-enabled`
-- service evidence stored in persistent workspace files
-- `journalctl` review for service-specific and boot-level logs
-- controlled custom `systemd` service creation and validation on `srv-admin`
-- replicated `sshd` service-management workspace validation on `srv-web`, `srv-db`, and `srv-storage`
-
-Phase 07 added a validated local storage and filesystem baseline across all four guests:
-- block device inspection with `lsblk` and `fdisk`
-- filesystem identification with `blkid`
-- mount-state inspection with `df -hT` and `mount`
-- dedicated lab disk preparation on `srv-admin` using `vdb` and `vdb1`
-- controlled XFS filesystem creation on the lab partition
-- temporary mount validation on `/mnt/phase07-demo`
-- persistent mount validation through `/etc/fstab`
-- replicated storage inspection workspace validation on `srv-web`, `srv-db`, and `srv-storage`
+**Phase 02:** Four-node RHEL 10.1 guest set (`srv-admin`, `srv-web`, `srv-db`, `srv-storage`) with UEFI/OVMF.
+**Phase 03:** Shell environment, redirection, regex filtering, and archive handling.
+**Phase 04:** Local identity, `sudo` access, and SSH service hardening.
+**Phase 05:** RPM/DNF inspection and executable Bash scripting baseline.
+**Phase 06:** `systemd` service management, `journalctl` logs, and custom unit creation.
+**Phase 07:** GPT partitioning (`vdb`), XFS filesystem creation, and `/etc/fstab` persistence.
+**Phase 08:** `ip/nmcli` addressing, routing, listener inspection, and `firewalld` zone/service management.
 
 ---
 
-## 🧠 Design Philosophy
-This project is built as a hands-on Linux systems lab emphasizing:
-* **Repeatability:** Workflows must be easy to replicate.
-* **Operational Clarity:** Clear separation between host and guest tasks.
-* **Clean Documentation:** Validation-first approach with visual evidence.
-* **Realistic Workflows:** Mimicking small, structured enterprise environments.
+## 🔗 Key Files (All Phases)
 
----
+### 📘 Runbooks
+* `runbooks/rhel10-install.md` — Main installation guide.
+* `runbooks/f03-shell-files-docs.md` | `runbooks/f04-identity-ssh-permissions.md`
+* `runbooks/f05-software-and-scripting.md` | `runbooks/f06-running-systems-service-management.md`
+* `runbooks/f07-local-storage-filesystems.md` | `runbooks/f08-networking-firewall.md`
 
-## 🔗 Key Files
-* `runbooks/rhel10-install.md` — Main guest installation guide.
-* `runbooks/f03-shell-files-docs.md` — Phase 03 operational runbook.
-* `runbooks/f04-identity-ssh-permissions.md` — Phase 04 operational runbook.
-* `runbooks/f05-software-and-scripting.md` — Phase 05 operational runbook.
-* `runbooks/f06-running-systems-service-management.md` — Phase 06 operational runbook.
-* `runbooks/f07-local-storage-filesystems.md` — Phase 07 operational runbook.
-* `runbooks/kvm-libvirt-host-setup.md` — Phase 01 virtualization host setup and validation.
-* `notes/guest-inventory.md` — Current state of all lab VMs.
-* `phases/07-local-storage-filesystems/README.md` — Detailed Phase 07 local storage and filesystems report.
-* `phases/06-running-systems-service-management/README.md` — Detailed Phase 06 report.
-* `phases/05-software-and-scripting/README.md` — Detailed Phase 05 report.
-* `phases/04-identity-ssh-permissions/README.md` — Detailed Phase 04 report.
-* `phases/03-shell-files-docs/README.md` — Detailed Phase 03 report.
-* `phases/02-rhel10-install/README.md` — Detailed Phase 02 deployment report.
-* `phases/01-virtualization-host/README.md` — Host preparation and validation record.
-* `validation/07-local-storage-filesystems-checklist.md` — Phase 07 validation checklist.
-* `validation/06-running-systems-service-management-checklist.md` — Phase 06 validation checklist.
-* `validation/05-software-and-scripting-checklist.md` — Phase 05 validation checklist.
-* `validation/04-identity-ssh-permissions-checklist.md` — Phase 04 validation checklist.
-* `validation/03-shell-files-docs-checklist.md` — Phase 03 validation checklist.
-* `docs/architecture.md` — High-level lab design.
+### 📋 Phase Reports
+* `phases/01-virtualization-host/README.md` | `phases/02-rhel10-install/README.md`
+* `phases/03-shell-files-docs/README.md` | `phases/04-identity-ssh-permissions/README.md`
+* `phases/05-software-and-scripting/README.md` | `phases/06-running-systems-service-management/README.md`
+* `phases/07-local-storage-filesystems/README.md` | `phases/08-networking-firewall/README.md`
+
+### ✅ Validation Checklists
+* `validation/03-shell-files-docs-checklist.md` | `validation/04-identity-ssh-permissions-checklist.md`
+* `validation/05-software-and-scripting-checklist.md` | `validation/06-running-systems-service-management-checklist.md`
+* `validation/07-local-storage-filesystems-checklist.md` | `validation/08-networking-firewall-checklist.md`
 
 ---
 
