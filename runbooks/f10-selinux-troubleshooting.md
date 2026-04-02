@@ -1,121 +1,158 @@
-# 🔐 Phase 10 - SELinux and Troubleshooting
+# 🛠️ Phase 10 Runbook: SELinux and Troubleshooting
 
 ## 🎯 Objective
-Establish and validate a controlled Phase 10 baseline for **SELinux awareness** and practical **troubleshooting** across the guest set.
+Execute and validate a practical Phase 10 workflow focused on SELinux awareness and basic troubleshooting across the guest set.
 
-This phase focuses on documenting SELinux status inspection, context visibility, controlled labeling validation, and basic diagnostic workflows using standard RHEL tools. The goal is to strengthen confidence in diagnosing access issues through proper context management rather than disabling security enforcement.
+This runbook documents:
+- SELinux enforcement and status inspection
+- file and process context visibility
+- controlled label change and correction with `restorecon`
+- basic troubleshooting using `ausearch` and `journalctl`
+- evidence capture across the lab guests
 
-This phase begins with a **full reference workflow on `srv-admin`** and follows with a **shorter validation pattern** on `srv-web`, `srv-db`, and `srv-storage`.
+This runbook uses **`srv-admin` as the full reference workflow** and then applies a **shorter validation pattern** to `srv-web`, `srv-db`, and `srv-storage`.
 
 ---
 
 ## 🔍 Scope
 
-### **Included in this phase:**
-* **SELinux Baseline:** Inspection of enforcement modes (`Enforcing`/`Permissive`) and detailed `sestatus`.
-* **Context Visibility:** Reviewing file and process labels using the `-Z` flag (`ls`, `ps`).
-* **Controlled Label Validation:** Demonstration of context inheritance and correction using `restorecon`.
-* **Basic Troubleshooting:** Identification of Access Vector Cache (AVC) denials using `ausearch` and `journalctl`.
-* **Evidence Persistence:** Structured capture of security contexts and diagnostic logs.
+### **Included**
+- SELinux baseline inspection with `getenforce` and `sestatus`
+- file and process context review with `ls -Z` and `ps -eZ`
+- controlled relabel validation using `chcon` and `restorecon`
+- basic troubleshooting using `ausearch` and `journalctl`
+- evidence capture and final workspace validation
 
-### **Excluded (Later Phases):**
-* Advanced custom policy development from scratch.
-* Complex module authoring with `audit2allow`.
-* System-wide relabeling of non-standard service ports.
-* Deep Boolean tuning for complex multi-tier applications.
-
----
-
-## 💻 Phase Context
-
-| Component | Details |
-| :--- | :--- |
-| **Phase Focus** | SELinux and Troubleshooting |
-| **Primary Guest** | `srv-admin` (Full Reference) |
-| **Secondary Guests** | `srv-web`, `srv-db`, `srv-storage` |
-| **Guest Platform** | Red Hat Enterprise Linux 10.1 |
-| **Workspace Root** | `~/lab/f10-selinux-troubleshooting` |
-| **Status** | ⚪ Not Started |
+### **Excluded**
+- custom SELinux policy authoring
+- module generation with `audit2allow`
+- complex SELinux Boolean tuning
+- permanent production policy redesign
 
 ---
 
-## 🛠️ Execution Strategy
-The phase follows the established **Master & Replicate** model:
+## 💻 Prerequisites
 
-1.  **Full Reference Workflow:** Execute the complete SELinux inspection and troubleshooting workflow on `srv-admin`.
-2.  **Validation Pattern:** Apply a shorter, inspection-focused validation block on the secondary guests.
-3.  **Evidence:** Capture screenshots of security states, contexts, and relabeling results.
-4.  **Closure:** Confirm that the validated Phase 10 baseline exists across all four guests.
+Before using this runbook, confirm:
+
+| Requirement | Expected State | Verification |
+| :--- | :--- | :--- |
+| **Lab Nodes** | All four guests operational | `virsh list --all` |
+| **Phase Baseline** | Phase 09 complete | Review Phase 09 report |
+| **Access Control** | Working user has sudo access | `sudo -v` |
+| **SELinux** | SELinux available on guest | `getenforce` |
+
+> [!IMPORTANT]
+> This phase validates SELinux inspection and troubleshooting fundamentals. Do **not** disable SELinux as part of the normal workflow.
 
 ---
 
-## 📐 Workspace Design
-Phase 10 operations are isolated within a dedicated directory structure:
+## 📍 Primary Workspace
 
+All work in this phase is organized under:
+`~/lab/f10-selinux-troubleshooting`
+
+**Workspace Layout**
 ```text
 ~/lab/f10-selinux-troubleshooting/
-├── selinux/          # State, booleans, and context evidence
-├── troubleshooting/   # AVC denials and diagnostic logs
-├── validation/       # Relabel and fix validation results
-└── tmp/              # Temporary testing area (demo labels)
+├── selinux/          # SELinux state and context evidence
+├── troubleshooting/  # AVC and journal evidence
+├── validation/       # Controlled relabel validation evidence
+└── tmp/              # Temporary demo files
 ```
 
 ---
 
-## ✅ Work Completed
+## 🚀 Full Workflow on srv-admin
+### 1) Create Workspace and Validate Context
+```bash
+mkdir -p ~/lab/f10-selinux-troubleshooting/{selinux,troubleshooting,validation,tmp}
+cd ~/lab/f10-selinux-troubleshooting
+pwd && whoami && hostnamectl --static
+find ~/lab/f10-selinux-troubleshooting -maxdepth 2 -type d | sort
+```
 
-### **Guest Status**
-| Guest | Role | Status |
-| :--- | :--- | :--- |
-| `srv-admin` | Reference Node | ⚪ Pending |
-| `srv-web` | Web Service | ⚪ Pending |
-| `srv-db` | Database Node | ⚪ Pending |
-| `srv-storage` | Storage Node | ⚪ Pending |
-
-### **Phase 10 Planned Milestones**
-* [ ] Phase 10 workspace created on `srv-admin`.
-* [ ] SELinux mode and status validated and exported.
-* [ ] Context visibility evidence (File/Process) captured.
-* [ ] Controlled `restorecon` workflow completed and verified.
-* [ ] Audit log diagnostic checks (AVC) captured on `srv-admin`.
-* [ ] Validation pattern replicated on secondary guests.
-* [ ] Screenshot evidence captured for all planned points.
-
----
-
-## 🧪 Planned srv-admin Validation Areas
-
-### 1. SELinux Baseline
+### 2) SELinux Baseline
 ```bash
 getenforce
 sestatus
 ```
 
-### 2. Context Visibility
+### 3) Context Visibility
 ```bash
-ls -Z /
-ps -eZ | head -n 15
+ls -Zd /
+ls -Zd /var /home /tmp
+ps -eZ | head -n 20
 ```
 
-### 3. Controlled Label Validation
+### 4) Save SELinux Baseline Evidence
+```bash
+getenforce > selinux/getenforce.txt
+sestatus > selinux/sestatus.txt
+ls -Zd / > selinux/root-context.txt
+ls -Zd /var /home /tmp > selinux/common-contexts.txt
+ps -eZ | head -n 20 > selinux/process-contexts.txt
+find selinux -maxdepth 1 -type f | sort
+```
+
+### 5) Controlled Relabel Validation
 ```bash
 mkdir -p ~/lab/f10-selinux-troubleshooting/tmp/demo
 touch ~/lab/f10-selinux-troubleshooting/tmp/demo/testfile
-ls -Z ~/lab/f10-selinux-troubleshooting/tmp/demo/testfile
-# Test relabeling
+ls -lZ ~/lab/f10-selinux-troubleshooting/tmp/demo
+
+sudo chcon -t httpd_sys_content_t ~/lab/f10-selinux-troubleshooting/tmp/demo/testfile
+ls -lZ ~/lab/f10-selinux-troubleshooting/tmp/demo
+
 sudo restorecon -Rv ~/lab/f10-selinux-troubleshooting/tmp/demo
+ls -lZ ~/lab/f10-selinux-troubleshooting/tmp/demo
 ```
 
-### 4. Basic Troubleshooting
+### 6) Save Relabel Evidence
 ```bash
-sudo ausearch -m AVC -ts recent || true
-sudo journalctl -t setroubleshoot --no-pager | tail -n 20 || true
+ls -lZ ~/lab/f10-selinux-troubleshooting/tmp/demo > validation/demo-contexts-final.txt
+sudo restorecon -Rv ~/lab/f10-selinux-troubleshooting/tmp/demo > validation/restorecon-output.txt
+```
+
+### 7) Basic Troubleshooting Review
+```bash
+sudo ausearch -m AVC || true
+sudo journalctl --no-pager | grep -i selinux | tail -n 20 || true
 ```
 
 ---
 
-## 📸 Planned Screenshot Inventory
-Evidence stored in `assets/screenshots/phase-10/`:
+## 🔁 Short Validation Pattern (Secondary Guests)
+```bash
+mkdir -p ~/lab/f10-selinux-troubleshooting/{selinux,troubleshooting,validation}
+cd ~/lab/f10-selinux-troubleshooting
+getenforce > selinux/getenforce.txt
+sestatus > selinux/sestatus.txt
+ls -Zd / /var /home /tmp > selinux/common-contexts.txt
+ps -eZ | head -n 20 > selinux/process-contexts.txt
+sudo ausearch -m AVC > troubleshooting/ausearch-avc.txt 2>/dev/null || true
+find ~/lab/f10-selinux-troubleshooting -maxdepth 3 -type f | sort
+```
+
+---
+
+## 🧪 Validation Targets
+### **srv-admin**
+- [x] Workspace created successfully
+- [x] SELinux baseline (Enforcing) validated
+- [x] Context visibility (File/Process) validated
+- [x] Controlled relabel (chcon/restorecon) validated
+- [x] Troubleshooting evidence captured
+
+### **srv-web, srv-db, srv-storage**
+- [x] Short validation pattern completed
+- [x] SELinux state and contexts captured
+- [x] Workspace validated
+
+---
+
+## 📸 Expected Screenshots
+Store in: `assets/screenshots/phase-10/`
 
 | ID | Description | Target |
 | :--- | :--- | :--- |
@@ -127,12 +164,5 @@ Evidence stored in `assets/screenshots/phase-10/`:
 
 ---
 
-## 🔗 Related Files
-* `runbooks/f10-selinux-troubleshooting.md` — Detailed step-by-step guide.
-* `phases/09-nfs-autofs/README.md` — Previous phase report.
-* `notes/guest-inventory.md` — Lab VM hardware tracker.
-
----
-
-## 🏁 Current Outcome
-Phase 10 is **Not Started** ⚪.
+## 🏁 Outcome
+Successful execution confirms a validated SELinux and troubleshooting baseline across the guest set. The environment is now prepared for the final lab closure.
