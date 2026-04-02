@@ -72,6 +72,7 @@ The following environment settings apply to the virtualization host where these 
   - Phase 07 — local storage and filesystems
   - Phase 08 — networking and firewall
   - Phase 09 — NFS client and `autofs` validation
+  - Phase 10 — SELinux and troubleshooting reference workflow
 - Autostart enabled after successful validation.
 - Screenshot coverage complete through the current documented phase set.
 
@@ -89,6 +90,7 @@ The following environment settings apply to the virtualization host where these 
   - Phase 07 — storage inspection replication
   - Phase 08 — networking and firewall replication
   - Phase 09 — NFS and `autofs` client replication
+  - Phase 10 — SELinux and troubleshooting replicated validation
 - Autostart enabled after successful validation.
 - Screenshot coverage complete through the current documented phase set.
 
@@ -106,6 +108,7 @@ The following environment settings apply to the virtualization host where these 
   - Phase 07 — storage inspection replication
   - Phase 08 — networking and firewall replication
   - Phase 09 — NFS and `autofs` client replication
+  - Phase 10 — SELinux and troubleshooting replicated validation
 - Autostart enabled after successful validation.
 - Screenshot coverage complete through the current documented phase set.
 
@@ -123,6 +126,7 @@ The following environment settings apply to the virtualization host where these 
   - Phase 07 — storage inspection replication
   - Phase 08 — networking and firewall replication
   - Phase 09 — NFS server export, firewall, and shared-storage validation
+  - Phase 10 — SELinux and troubleshooting replicated validation
 - Autostart enabled after successful validation.
 - Screenshot coverage complete through the current documented phase set.
 
@@ -151,14 +155,15 @@ Update this file whenever one of the following events occurs:
 - **Phase 07:** Local Storage and Filesystems ✅
 - **Phase 08:** Networking and Firewall ✅
 - **Phase 09:** NFS and autofs ✅
+- **Phase 10:** SELinux and Troubleshooting ✅
 
 **Current validated guests:** `srv-admin`, `srv-web`, `srv-db`, `srv-storage`  
 **Current reference infrastructure roles:**  
-- `srv-admin` → reference operations node  
+- `srv-admin` → reference operations and SELinux workflow node  
 - `srv-storage` → reference NFS server  
 - `srv-web`, `srv-db` → replicated client validation nodes  
 
-**Next planned phase:** **Phase 10 — SELinux and troubleshooting**
+**Next planned phase:** **Phase 11 — Final integrated validation**
 
 ---
 
@@ -172,3 +177,5 @@ The lab now includes:
 - validated networking and firewall baselines across all nodes
 - a working NFS server on `srv-storage`
 - validated NFS and `autofs` client behavior on `srv-admin`, `srv-web`, and `srv-db`
+- a validated SELinux and troubleshooting baseline on `srv-admin`
+- replicated SELinux inspection validation on `srv-web`, `srv-db`, and `srv-storage`
