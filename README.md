@@ -7,7 +7,7 @@
 ![Platform](https://img.shields.io/badge/Platform-RHEL%2010.1-red)
 ![Host](https://img.shields.io/badge/Host-Fedora%2043-blue)
 ![Virtualization](https://img.shields.io/badge/Virtualization-KVM%20%2B%20QEMU%20%2B%20libvirt-6f42c1)
-![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 ![Docs](https://img.shields.io/badge/Documentation-Phase--based-orange)
 
 </div>
@@ -27,7 +27,8 @@ Phase 06 established a validated running systems and service management baseline
 Phase 07 established a validated local storage and filesystem baseline.
 Phase 08 established a validated networking and firewall baseline.
 Phase 09 established a validated NFS and autofs baseline.
-Phase 10 established a validated SELinux and troubleshooting baseline across the lab, preparing the environment for the final integrated validation phase.
+Phase 10 established a validated SELinux and troubleshooting baseline.
+Phase 11 established the final integrated validation of the full lab, confirming that guest readiness, storage, NFS/autofs, core services, and SELinux remained healthy together across the environment.
 
 ---
 
@@ -56,7 +57,7 @@ The infrastructure consists of four core virtual machines:
 - [x] **Phase 08** — Networking and firewall baseline ✅
 - [x] **Phase 09** — NFS and autofs baseline ✅
 - [x] **Phase 10** — SELinux and troubleshooting baseline ✅
-- [ ] **Phase 11** — Final integrated validation ⚪
+- [x] **Phase 11** — Final integrated validation ✅
 
 ---
 
@@ -83,17 +84,22 @@ The infrastructure consists of four core virtual machines:
 ### 🔐 SELinux and Troubleshooting (Phase 10)
 **srv-admin SELinux baseline and controlled relabel validation**
 ![Phase 10 SELinux](assets/screenshots/phase-10/P10-03-controlled-relabel-srv-admin.png)
-**Replicated SELinux validation workspace**
 ![Phase 10 Replicated Workspace](assets/screenshots/phase-10/P10-07-final-workspace-srv-storage.png)
+
+### ✅ Final Integrated Validation (Phase 11)
+**Host-side libvirt overview and guest inventory**
+![Phase 11 Host Overview](assets/screenshots/phase-11/P11-01-host-libvirt-overview.png)
+**Final cross-node integrated validation**
+![Phase 11 Cross-Node Validation](assets/screenshots/phase-11/P11-06-final-cross-node-validation.png)
 
 ---
 
-## ✅ Active Development
+## ✅ Project State
 
 > [!IMPORTANT]
-> **Status:** Active Development  
-> **Current Baseline:** RHEL 10.1 Deployment + All Phases up to Phase 10 SELinux/Troubleshooting Complete.  
-> **Next Milestone:** Phase 11 — Final Integrated Validation
+> **Status:** Complete ✅  
+> **Current Baseline:** RHEL 10.1 Deployment + All Phases through Phase 11 Final Integrated Validation Complete.  
+> **Project State:** Final lab validation complete and documentation closed.
 
 ---
 
@@ -102,7 +108,8 @@ The infrastructure consists of four core virtual machines:
 **Phase 02-06:** Provisioning, Identity, Software, and Service management baselines.
 **Phase 07-08:** Storage partitioning, XFS filesystems, and Firewalld zone management.
 **Phase 09:** NFS export management, client-side validation, and `autofs` automation.
-**Phase 10:** SELinux enforcement inspection, context visibility for files and processes, controlled relabel correction with `restorecon`, and replicated SELinux troubleshooting validation on `srv-web`, `srv-db`, and `srv-storage`.
+**Phase 10:** SELinux enforcement inspection, context visibility, controlled relabeling, and diagnostics.
+**Phase 11:** Host-side libvirt validation, integrated guest validation across `srv-admin`, `srv-storage`, `srv-web`, and `srv-db`, persistent storage verification, NFS/autofs acceptance checks, and full-lab confirmation that services and SELinux remained healthy together.
 
 ---
 
@@ -114,6 +121,7 @@ The infrastructure consists of four core virtual machines:
 * `runbooks/f05-software-and-scripting.md` | `runbooks/f06-running-systems-service-management.md`
 * `runbooks/f07-local-storage-filesystems.md` | `runbooks/f08-networking-firewall.md`
 * `runbooks/f09-nfs-autofs.md` | `runbooks/f10-selinux-troubleshooting.md`
+* `runbooks/f11-final-integrated-validation.md`
 
 ### 📋 Phase Reports
 * `phases/01-virtualization-host/README.md` | `phases/02-rhel10-install/README.md`
@@ -121,12 +129,14 @@ The infrastructure consists of four core virtual machines:
 * `phases/05-software-and-scripting/README.md` | `phases/06-running-systems-service-management/README.md`
 * `phases/07-local-storage-filesystems/README.md` | `phases/08-networking-firewall/README.md`
 * `phases/09-nfs-autofs/README.md` | `phases/10-selinux-troubleshooting/README.md`
+* `phases/11-final-integrated-validation/README.md`
 
 ### ✅ Validation Checklists
 * `validation/03-shell-files-docs-checklist.md` | `validation/04-identity-ssh-permissions-checklist.md`
 * `validation/05-software-and-scripting-checklist.md` | `validation/06-running-systems-service-management-checklist.md`
 * `validation/07-local-storage-filesystems-checklist.md` | `validation/08-networking-firewall-checklist.md`
 * `validation/09-nfs-autofs-checklist.md` | `validation/10-selinux-troubleshooting-checklist.md`
+* `validation/11-final-integrated-validation-checklist.md`
 
 ---
 
