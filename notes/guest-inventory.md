@@ -1,7 +1,7 @@
 # 📊 Guest Inventory - RHEL 10 Lab
 
 ## 🎯 Purpose
-This file tracks the guest virtual machines used in the **EnterpriseTech RHEL 10 lab**. It provides a quick operational overview of resource allocation, guest roles, storage layout, validation scope, and current phase alignment across the environment.
+This file tracks the guest virtual machines used in the **EnterpriseTech RHEL 10 lab**. It provides a quick operational overview of resource allocation, guest roles, storage layout, validation scope, and final phase alignment across the environment.
 
 ---
 
@@ -73,8 +73,14 @@ The following environment settings apply to the virtualization host where these 
   - Phase 08 — networking and firewall
   - Phase 09 — NFS client and `autofs` validation
   - Phase 10 — SELinux and troubleshooting reference workflow
+  - Phase 11 — final integrated validation reference workflow
+- Final integrated validation confirmed:
+  - Phase 07 filesystem still mounted on `/mnt/phase07-demo`
+  - autofs/NFS access still functioning
+  - SELinux still in `Enforcing`
+  - `sshd` and `firewalld` active
 - Autostart enabled after successful validation.
-- Screenshot coverage complete through the current documented phase set.
+- Screenshot coverage complete through the full documented lab lifecycle.
 
 ### 🌐 `srv-web`
 - Successfully deployed using the validated guest pattern established by `srv-admin`.
@@ -91,8 +97,15 @@ The following environment settings apply to the virtualization host where these 
   - Phase 08 — networking and firewall replication
   - Phase 09 — NFS and `autofs` client replication
   - Phase 10 — SELinux and troubleshooting replicated validation
+  - Phase 11 — final integrated client validation
+- Final integrated validation confirmed:
+  - hostname and network state correct
+  - `sshd` active
+  - `firewalld` active
+  - SELinux in `Enforcing`
+  - autofs path readable from `srv-storage`
 - Autostart enabled after successful validation.
-- Screenshot coverage complete through the current documented phase set.
+- Screenshot coverage complete through the full documented lab lifecycle.
 
 ### 🗄️ `srv-db`
 - Successfully deployed using the validated guest pattern reused across the lab.
@@ -109,14 +122,21 @@ The following environment settings apply to the virtualization host where these 
   - Phase 08 — networking and firewall replication
   - Phase 09 — NFS and `autofs` client replication
   - Phase 10 — SELinux and troubleshooting replicated validation
+  - Phase 11 — final integrated client validation
+- Final integrated validation confirmed:
+  - hostname and network state correct
+  - `sshd` active
+  - `firewalld` active
+  - SELinux in `Enforcing`
+  - autofs path readable from `srv-storage`
 - Autostart enabled after successful validation.
-- Screenshot coverage complete through the current documented phase set.
+- Screenshot coverage complete through the full documented lab lifecycle.
 
 ### 💾 `srv-storage`
 - Successfully deployed using the validated installation pattern established by the previous guests.
 - Installed on **Red Hat Enterprise Linux 10.1** with validated hostname `srv-storage`.
 - Connected to the `lab-int` network with DHCP-assigned connectivity.
-- Acts as the lab’s **shared storage provider** and the **reference NFS server** in Phase 09.
+- Acts as the lab’s **shared storage provider** and the **reference NFS server**.
 - Validated through:
   - Phase 02 — deployment baseline
   - Phase 03 — shell, files, and local documentation
@@ -127,8 +147,15 @@ The following environment settings apply to the virtualization host where these 
   - Phase 08 — networking and firewall replication
   - Phase 09 — NFS server export, firewall, and shared-storage validation
   - Phase 10 — SELinux and troubleshooting replicated validation
+  - Phase 11 — final integrated NFS server validation
+- Final integrated validation confirmed:
+  - `rpcbind` active
+  - `nfs-server` active
+  - export visible through `showmount`
+  - export configuration valid through `exportfs -v`
+  - SELinux in `Enforcing`
 - Autostart enabled after successful validation.
-- Screenshot coverage complete through the current documented phase set.
+- Screenshot coverage complete through the full documented lab lifecycle.
 
 ---
 
@@ -156,19 +183,20 @@ Update this file whenever one of the following events occurs:
 - **Phase 08:** Networking and Firewall ✅
 - **Phase 09:** NFS and autofs ✅
 - **Phase 10:** SELinux and Troubleshooting ✅
+- **Phase 11:** Final Integrated Validation ✅
 
 **Current validated guests:** `srv-admin`, `srv-web`, `srv-db`, `srv-storage`  
 **Current reference infrastructure roles:**  
-- `srv-admin` → reference operations and SELinux workflow node  
+- `srv-admin` → reference operations and final integrated validation node  
 - `srv-storage` → reference NFS server  
 - `srv-web`, `srv-db` → replicated client validation nodes  
 
-**Next planned phase:** **Phase 11 — Final integrated validation**
+**Next planned phase:** None — lab phase sequence complete ✅
 
 ---
 
 ## 🏁 Current Inventory Outcome
-All planned guests are deployed, documented, and validated through the current lab scope.
+All planned guests are deployed, documented, and validated through the full lab scope.
 
 The lab now includes:
 
@@ -177,5 +205,7 @@ The lab now includes:
 - validated networking and firewall baselines across all nodes
 - a working NFS server on `srv-storage`
 - validated NFS and `autofs` client behavior on `srv-admin`, `srv-web`, and `srv-db`
-- a validated SELinux and troubleshooting baseline on `srv-admin`
-- replicated SELinux inspection validation on `srv-web`, `srv-db`, and `srv-storage`
+- a validated SELinux and troubleshooting baseline across the environment
+- a completed final integrated validation confirming that storage, networking, NFS/autofs, services, and SELinux remain healthy together
+
+This inventory now reflects the final validated state of the project.
